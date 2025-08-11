@@ -1,0 +1,13 @@
+Dentro da sua pasta src/, crie uma nova estrutura de pastas para guardar as imagens que o robô vai procurar.
+
+Crie a pasta: src/assets/automation_images/
+
+Dentro desta pasta, você vai salvar pequenas capturas de tela dos elementos da interface do Webmail. Por exemplo:
+
+nova_mensagem.png (uma foto do botão "Nova Mensagem" ou "Escrever")
+
+campo_para.png (uma foto do rótulo "Para:" ou de uma parte única do campo do destinatário)
+
+botao_enviar.png (uma foto do botão "Enviar")
+
+Dica de Ouro: As capturas de tela devem ser pequenas e conter apenas a parte mais única do botão/campo. Use a ferramenta de captura do Windows (Win + Shift + S).

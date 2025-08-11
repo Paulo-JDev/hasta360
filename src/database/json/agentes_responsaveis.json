@@ -1,0 +1,56 @@
+{
+    "ordenador_de_despesa": [
+        {
+            "Nome": "TESTE",
+            "Posto": "Capitão de Mar e Guerra (IM)",
+            "Abreviacao": "CMG (IM)",
+            "Funcao": "Ordenador de Despesa"
+        }
+    ],
+    "agente_fiscal": [
+        {
+            "Nome": "TESTE",
+            "Posto": "Capitão de Mar e Guerra (IM)",
+            "Abreviacao": "CMG (IM)",
+            "Funcao": "Agente Fiscal"
+        },
+        {
+            "Nome": "TESTE1",
+            "Posto": "Capitão de Fragata (IM)",
+            "Abreviacao": "CF (IM)",
+            "Funcao": "Agente Fiscal"
+        }
+    ],
+    "gerente_de_crédito": [
+        {
+            "Nome": "JOÃO",
+            "Posto": "Primeiro-Tenente",
+            "Abreviacao": "1ºTEN",
+            "Funcao": "Gerente de Crédito"
+        }
+    ],
+    "responsável_pela_demanda": [
+        {
+            "Nome": "CARLOS",
+            "Posto": "Primeiro-Tenente",
+            "Abreviacao": "1ºTEN",
+            "Funcao": "Responsável pela Demanda"
+        }
+    ],
+    "operador_da_contratação": [
+        {
+            "Nome": "MATHES",
+            "Posto": "Primeiro-Tenente",
+            "Abreviacao": "1ºTEN",
+            "Funcao": "Operador da Contratação"
+        }
+    ],
+    "pregoeiro": [
+        {
+            "Nome": "ROBERTA",
+            "Posto": "Primeiro-Tenente",
+            "Abreviacao": "1ºTEN",
+            "Funcao": "Pregoeiro"
+        }
+    ]
+}

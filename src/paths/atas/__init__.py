@@ -1,0 +1,3 @@
+from .atas_path import (
+    TEMPLATE_PATH, DATA_ATAS_PATH, CONFIG_API_FILE, DATA_ATAS_API_PATH
+)

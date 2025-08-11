@@ -1,0 +1,18 @@
+{
+    "organizacoes": [
+        {
+            "UASG": "787010",
+            "Nome": "CENTRO DE INTENDÊNCIA DA MARINHA EM BRASÍLIA",
+            "Sigla": "CEIMBRA",
+            "Indicativo": "CITBRA",
+            "Cidade": "Brasília-DF"
+        },
+        {
+            "UASG": "771300",
+            "Nome": "CENTRO DE OBTENÇÃO DA MARINHA NO RIO DE JANEIRO",
+            "Sigla": "COMRJ",
+            "Indicativo": "CITBRA",
+            "Cidade": "Rio de Janeiro-RJ"
+        }
+    ]
+}

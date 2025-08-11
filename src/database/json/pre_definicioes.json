@@ -1,0 +1,24 @@
+{
+    "ultimo_cnpj": "0005055505050",
+    "ultimo_ano": "2024",
+    "ultimo_sequencial": "00290",
+    "ordenador_despesas": [
+        "CT IM Siqueira Campos",
+        "CT MARCOS",
+        "CT Romulo"
+    ],
+    "cidades_combobox": [
+        "Brasília",
+        "Rio de Janeiro",
+        "São Paulo",
+        "recife",
+        "salvador"
+    ],
+    "org_combobox": [
+        "Ceimbra",
+        "ceimspa",
+        "testes",
+        "novo"
+    ],
+    "initial_text": "Cabeçalho para teste"
+}

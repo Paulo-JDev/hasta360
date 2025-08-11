@@ -1,0 +1,1187 @@
+{
+    "PE 90028/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Montagem do Processo",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Nota Técnica",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90039/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Nota Técnica",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90010/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Consolidação de Demanda",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90030/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Montagem do Processo",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90027/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Montagem do Processo",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90021/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90032/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Montagem do Processo",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90019/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-06-04",
+            "data_final": "2024-07-08",
+            "dias_na_etapa": 34,
+            "comentario": ""
+        },
+        {
+            "situacao": "Nota Técnica",
+            "data_inicial": "2024-07-08",
+            "data_final": "2024-08-06",
+            "dias_na_etapa": 29,
+            "comentario": ""
+        },
+        {
+            "situacao": "Atendimento da NT",
+            "data_inicial": "2024-08-06",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 110,
+            "comentario": ""
+        },
+        {
+            "situacao": "AGU",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90011/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Atendimento da NT",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90001/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-10-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 31,
+            "comentario": ""
+        },
+        {
+            "situacao": "Atendimento da NT",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90005/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90007/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90031/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-08-05",
+            "data_final": "2024-08-05",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Sessão Pública",
+            "data_inicial": "2024-08-05",
+            "data_final": "2024-08-27",
+            "dias_na_etapa": 22,
+            "comentario": ""
+        },
+        {
+            "situacao": "Pré-Publicação",
+            "data_inicial": "2024-08-27",
+            "data_final": "2024-10-07",
+            "dias_na_etapa": 41,
+            "comentario": ""
+        },
+        {
+            "situacao": "Assinatura Contrato",
+            "data_inicial": "2024-10-07",
+            "data_final": "2024-10-08",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        },
+        {
+            "situacao": "Sessão Pública",
+            "data_inicial": "2024-10-08",
+            "data_final": "2024-11-05",
+            "dias_na_etapa": 28,
+            "comentario": ""
+        },
+        {
+            "situacao": "Pré-Publicação",
+            "data_inicial": "2024-11-05",
+            "data_final": "2024-11-05",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Assinatura Contrato",
+            "data_inicial": "2024-11-05",
+            "data_final": "2024-11-05",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Nota Técnica",
+            "data_inicial": "2024-11-05",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 20,
+            "comentario": ""
+        }
+    ],
+    "PE 90008/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Consolidação de Demanda",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "TJDL 90001/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Sessão Pública",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Pré-Publicação",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-25",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        },
+        {
+            "situacao": "Sessão Pública",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 90036/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Consolidação de Demanda",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90012/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Sessão Pública",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-25",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        },
+        {
+            "situacao": "Assinatura Contrato",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 90013/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Consolidação de Demanda",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90020/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-10-29",
+            "data_final": "2024-10-29",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Assinatura Contrato",
+            "data_inicial": "2024-10-08",
+            "data_final": "2024-10-08",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Concluído",
+            "data_inicial": "2024-09-04",
+            "data_final": "2024-11-25",
+            "dias_na_etapa": 82,
+            "comentario": ""
+        },
+        {
+            "situacao": "Sessão Pública",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 90022/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90024/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Assinatura Contrato",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Concluído",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "CC 90001/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Consolidação de Demanda",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90004/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90040/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Consolidação de Demanda",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90029/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90003/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90025/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90033/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90016/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90018/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90002/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90044/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90014/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "TJIL 90001/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90035/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90009/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90006/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90041/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90037/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90015/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90049/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90038/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90023/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90026/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90017/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90048/2027": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90047/2026": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 10/2023": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Sessão Pública",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Assinatura Contrato",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Nota Técnica",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Atendimento da NT",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 13/2023": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Sessão Pública",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Pré-Publicação",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Consolidação de Demanda",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Atendimento da NT",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 08/2023": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Sessão Pública",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Assinatura Contrato",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Atendimento da NT",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 04/2023": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Sessão Pública",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Montagem do Processo",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Atendimento da NT",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90045/2025": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 07/2023": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Sessão Pública",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Pré-Publicação",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Atendimento da NT",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90046/2025": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90001/2025": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Assinatura Contrato",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Sessão Pública",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-24",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Concluído",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-25",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        },
+        {
+            "situacao": "Assinatura Contrato",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 90001/2026": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90001/2027": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90051/2023": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90050/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90053/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90054/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90052/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-24",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 1,
+            "comentario": ""
+        }
+    ],
+    "PE 90066/2025": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-25",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Consolidação de Demanda",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-25",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Montagem do Processo",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-25",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Nota Técnica",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-25",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Atendimento da NT",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-25",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        },
+        {
+            "situacao": "Assinatura Contrato",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 90058/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 90060/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 90059/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 90064/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 90061/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 90062/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 90057/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 90065/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 90055/2023": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 90063/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 90056/2024": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 1/2025": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 3/2025": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 2/2025": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 90005/2025": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-25",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 90023/2026": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-26",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 25/2025": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-26",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 90048/2025": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-26",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 70/2025": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-26",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 90066/2026": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-26",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 90067/2027": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-26",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ],
+    "PE 9035/2027": [
+        {
+            "situacao": "Planejamento",
+            "data_inicial": "2024-11-26",
+            "data_final": "2024-11-26",
+            "dias_na_etapa": 0,
+            "comentario": ""
+        }
+    ]
+}

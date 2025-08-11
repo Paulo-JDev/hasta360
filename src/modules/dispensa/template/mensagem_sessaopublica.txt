@@ -1,0 +1,15 @@
+Assunto: Abertura de Sessão Pública - Dispensa Eletrônica {{numero da dispensa}}
+
+Prezados,
+
+Informamos que a Sessão Pública referente ao processo de Dispensa Eletrônica abaixo foi iniciada.
+
+Detalhes do Processo:
+- Número da Dispensa: {{numero da dispensa}}
+- NUP: {{NUP}}
+- Comunicação Padronizada (CP): {{numero-da-cp}}
+
+Solicitamos que os setores responsáveis procedam com as devidas ações e acompanhamento.
+
+Atenciosamente,
+Sistema de Gestão 360.
