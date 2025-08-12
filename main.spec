@@ -1,12 +1,9 @@
-# main.spec
-# -*- mode: python ; coding: utf-8 -*-
-
 import sys
 from pathlib import Path
 from PyInstaller.utils.hooks import collect_all
 
 # Defina o caminho do diretório base diretamente
-BASE_DIR = Path("C:/Users/gabri/OneDrive/Área de Trabalho/prog-estagio/git-comandante/360_homolog/src")
+BASE_DIR = Path("C:/Users/drago/Desktop/prog-tds/licitacao-comandante/hasta360/src")
 DATABASE_DIR = BASE_DIR / "database"
 ASSETS_DIR = BASE_DIR / "assets"
 ICON_PATH = ASSETS_DIR / "icone_brasil.ico"
