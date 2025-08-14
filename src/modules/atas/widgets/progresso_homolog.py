@@ -33,7 +33,8 @@ class ConclusaoDialog(QDialog):
 
 class ProcessamentoWidget(QWidget):
     resultadosHomologacao = pyqtSignal(object)
-    
+    gerarPlanilhaBaseClicked = pyqtSignal()
+
     def __init__(self, pdf_dir, icons, model, database_ata_manager, main_window, parent=None):
         super().__init__(parent)
         self.pdf_dir = pdf_dir
@@ -75,7 +76,7 @@ class ProcessamentoWidget(QWidget):
         layout_instruction.addWidget(label_contador)  
           
         add_button_func("Atualizar", "loading-arrow", self.update_pdf_count, layout_instruction, self.icon_cache, "Clique para ver instruções",  button_size=(150, 30))
-        # add_button_func("Redefinir Pasta PDF", "add-folder", self.definir_pasta_pdf_padrao, button_layout, self.icon_cache, "Clique para ver instruções")
+        add_button_func("Definir Pasta", "add-folder", self.definir_pasta_pdf_padrao, layout_instruction, self.icon_cache, "Clique para definir uma pasta PDF diferente", button_size=(150, 30))
         layout_instruction.addStretch()
         main_layout.addLayout(layout_instruction)
 
@@ -131,13 +132,34 @@ class ProcessamentoWidget(QWidget):
             QMessageBox.warning(self, "Erro", "O diretório PDF não é válido.")
 
     def definir_pasta_pdf_padrao(self):
-        folder = QFileDialog.getExistingDirectory(self, "Defina a Pasta PDF Padrão")
-        if folder:
-            # Atualiza self.pdf_dir com o novo caminho
-            self.pdf_dir = Path(folder)
-            # Emite o sinal para notificar a mudança de diretório PDF
-            self.main_window.pdf_dir_changed.emit(self.pdf_dir)
-            QMessageBox.information(self, "Pasta Padrão Definida", f"A pasta padrão foi definida como: {folder}")
+        """
+        Abre um diálogo para o usuário selecionar uma pasta, mostrando os arquivos PDF
+        dentro dela para facilitar a escolha.
+        """
+        # 1. Cria uma instância do diálogo de arquivos para ter mais controle
+        dialog = QFileDialog(self, "Selecione a pasta que contém os PDFs", str(self.pdf_dir))
+        #dialog.setOption(QFileDialog.Option.DontUseNativeDialog, True)
+        dialog.setFileMode(QFileDialog.FileMode.Directory)
+        dialog.setOption(QFileDialog.Option.ShowDirsOnly, False)
+        dialog.setNameFilter("Arquivos PDF (*.pdf);;Todos os Arquivos (*)")
+        if dialog.exec():
+            # Pega o caminho do diretório que o usuário escolheu
+            selected_folder = dialog.selectedFiles()[0]
+            
+            if selected_folder:
+                # Atualiza o self.pdf_dir com o novo caminho
+                self.pdf_dir = Path(selected_folder)
+                
+                # Emite o sinal para que toda a aplicação saiba da nova pasta
+                if hasattr(self, 'main_window') and hasattr(self.main_window, 'pdf_dir_changed'):
+                    self.main_window.pdf_dir_changed.emit(self.pdf_dir)
+                
+                # Atualiza a contagem de PDFs na tela imediatamente
+                self.update_pdf_count()
+                
+                QMessageBox.information(self, 
+                                        "Pasta Definida", 
+                                        f"A pasta de trabalho foi alterada para:\n{self.pdf_dir}")
             
     def update_context(self, text):
         self.context_area.append(text)

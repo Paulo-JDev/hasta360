@@ -54,9 +54,6 @@ def executar_automacao_email_coords(destinatario, assunto, corpo_mensagem):
         print("Clicando no botão Enviar...")
         pyautogui.click(x=-1889, y=231)
 
-        print("--- AUTOMAÇÃO FINALIZADA ---")
-        QMessageBox.information(None, "Automação Concluída", "O e-mail foi preenchido e enviado.")
-
     except Exception as e:
         print(f"ERRO durante a automação com PyAutoGUI: {e}")
         QMessageBox.critical(None, "Erro na Automação", f"Ocorreu um erro durante a automação do mouse e teclado: {e}")
