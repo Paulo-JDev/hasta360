@@ -3,7 +3,7 @@ from pathlib import Path
 from PyInstaller.utils.hooks import collect_all
 
 # Defina o caminho do diretório base diretamente
-BASE_DIR = Path("C:/Users/gabri/OneDrive/Área de Trabalho/prog-estagio/git-comandante/hasta360/src")
+BASE_DIR = Path("C:/Users/drago/Desktop/prog-tds/licitacao-comandante/hasta360/src")
 # Path("C:/Users/gabri/OneDrive/Área de Trabalho/prog-estagio/git-comandante/hasta360/src")
 # Path("C:/Users/drago/Desktop/prog-tds/licitacao-comandante/hasta360/src")
 DATABASE_DIR = BASE_DIR / "database"

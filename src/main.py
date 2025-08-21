@@ -10,7 +10,7 @@ from modules.config.config_widget import ConfigManager
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        print("Projeto Hasta360 - Versão 1.1.0")
+        print("Projeto Hasta360 - Versão 1.2.0")
         self.icons = load_icons()
         self.buttons = {}
         self.active_button = None
@@ -70,8 +70,8 @@ class MainWindow(QMainWindow):
             ("pdf_button_blue", "pdf_button", "Atas (PDF)", self.show_atas),
             ("api_azul", "api", "Atas (API)", self.show_atas_api),
             ("plan_dispensa_blue", "plan_dispensa", "Dispensa Eletrônica", self.show_dispensa),
-            ("contrato_blue", "contrato", "Contratos", self.show_contratos),
-            ("contrato_blue", "contrato", "Planejamento", self.show_planejamento),
+            #("contrato_blue", "contrato", "Contratos", self.show_contratos),
+            #("contrato_blue", "contrato", "Planejamento", self.show_planejamento),
             ("statistics_azul", "statistics", "Indicadores", self.show_indicadores),                        
             ("config", "config_hover", "Configurações", self.show_config),
         ]

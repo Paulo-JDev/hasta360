@@ -13,6 +13,13 @@
             "Sigla": "COMRJ",
             "Indicativo": "CITBRA",
             "Cidade": "Rio de Janeiro-RJ"
+        },
+        {
+            "UASG": "787000",
+            "Nome": "COMANDO DO 7° DISTRITO NAVAL",
+            "Sigla": "COM7DN",
+            "Indicativo": "CITBRA",
+            "Cidade": "Brasília-DF"
         }
     ]
 }
