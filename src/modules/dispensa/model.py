@@ -307,6 +307,7 @@ class DispensaEletronicaModel(QObject):
             com_disputa, 
             pesquisa_preco, 
             atividade_custeio,
+            parasereditado,
             previsao_contratacao, 
             responsavel_pela_demanda, 
             ordenador_despesas, 
@@ -332,7 +333,7 @@ class DispensaEletronicaModel(QObject):
             sequencial_pncp,
             link_pncp,
             comunicacao_padronizada
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(id_processo) DO UPDATE SET
             situacao=excluded.situacao,
             tipo=excluded.tipo,
@@ -352,6 +353,7 @@ class DispensaEletronicaModel(QObject):
             com_disputa=excluded.com_disputa,
             pesquisa_preco=excluded.pesquisa_preco,
             atividade_custeio=excluded.atividade_custeio,
+            parasereditado=excluded.parasereditado,
             previsao_contratacao=excluded.previsao_contratacao,
             responsavel_pela_demanda=excluded.responsavel_pela_demanda, 
             ordenador_despesas=excluded.ordenador_despesas, 
@@ -408,6 +410,7 @@ class DispensaEletronicaModel(QObject):
                     data.get('com_disputa'),
                     data.get('pesquisa_preco'), 
                     data.get('atividade_custeio'),
+                    data.get('parasereditado'),
                     data.get('previsao_contratacao', ''),
                     data.get('responsavel_pela_demanda', ''),
                     data.get('ordenador_despesas', ''), 
@@ -459,7 +462,7 @@ class CustomSqlTableModel(QSqlTableModel):
             "prioridade_par", "cep", "endereco", "email", "telefone", 
             "dias_para_recebimento", "horario_para_recebimento", "valor_total", 
             "acao_interna", "fonte_recursos", "natureza_despesa", "unidade_orcamentaria", 
-            "ptres", "atividade_custeio", "comentarios", "justificativa", "cnpj_matriz","sequencial_pncp", "link_pncp", 
+            "ptres", "atividade_custeio", "parasereditado", "comentarios", "justificativa", "cnpj_matriz","sequencial_pncp", "link_pncp", 
             "comunicacao_padronizada"
         ]
 

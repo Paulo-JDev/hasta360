@@ -8,6 +8,7 @@ Detalhes do Processo:
 - Número da Dispensa: {{numero da dispensa}}
 - NUP: {{NUP}}
 - Comunicação Padronizada (CP): {{numero-da-cp}}
+- Data da sessão publica: {{sessao_publica}}
 
 Solicitamos que os setores responsáveis procedam com as devidas ações e acompanhamento.
 

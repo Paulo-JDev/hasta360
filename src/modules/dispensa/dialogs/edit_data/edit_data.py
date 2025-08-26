@@ -71,6 +71,10 @@ class EditarDadosWindow(QMainWindow):
         self.radio_disputa_nao = None
         self.radio_pesquisa_sim = None
         self.radio_pesquisa_nao = None
+        # =======================================================================
+        self.radio_parasereditado_sim = None
+        self.radio_parasereditado_nao = None
+
         self.selected_button = None
         self.valor_total_edit = None
         # Inicialização do stacked_widget com estilo aplicado
@@ -278,7 +282,8 @@ class EditarDadosWindow(QMainWindow):
             'vigencia': self.vigencia_combo.currentText(),
             'criterio_julgamento': self.criterio_combo.currentText(),
             'com_disputa': "Sim" if self.radio_disputa_sim.isChecked() else "Não",
-            'pesquisa_preco': "Sim" if self.radio_pesquisa_sim.isChecked() else "Não"
+            'pesquisa_preco': "Sim" if self.radio_pesquisa_sim.isChecked() else "Não",
+            'parasereditado': 'Sim' if self.radio_parasereditado_sim.isChecked() else 'Não'
         }
         
         # Coleta os dados dos widgets de classificação orçamentária
@@ -289,9 +294,9 @@ class EditarDadosWindow(QMainWindow):
             'natureza_despesa': self.natureza_despesa_edit.text(),
             'unidade_orcamentaria': self.unidade_orcamentaria_edit.text(),
             'ptres': self.ptres_edit.text(),
-            'atividade_custeio': 'Sim' if self.radio_custeio_sim.isChecked() else 'Não'
+            'atividade_custeio': 'Sim' if self.radio_custeio_sim.isChecked() else 'Não',
+            'parasereditado': 'Sim' if self.radio_parasereditado_sim.isChecked() else 'Não'
         })
-
 
         data_to_save.update({
             'comunicacao_padronizada': self.cp_edit.text(),
@@ -696,9 +701,29 @@ class EditarDadosWindow(QMainWindow):
         custeio_layout.addStretch()
         custeio_layout.addWidget(self.radio_custeio_sim)
         custeio_layout.addWidget(self.radio_custeio_nao)
-        
         # Adiciona o layout do rádio button ao layout principal
         contratacao_layout.addLayout(custeio_layout)
+
+        parasereditado_layout = QHBoxLayout()
+        parasereditado_label = QLabel("local para eu mudar(view)?") # Mude este texto quando souber o nome final
+        self.radio_parasereditado_sim = QRadioButton("Sim")
+        self.radio_parasereditado_nao = QRadioButton("Não")
+        self.parasereditado_group = QButtonGroup()
+        self.parasereditado_group.addButton(self.radio_parasereditado_sim)
+        self.parasereditado_group.addButton(self.radio_parasereditado_nao)
+
+        # Define o estado inicial com base nos dados (o padrão será 'Não')
+        parasereditado_value = self.dados.get('parasereditado', 'Não')
+        self.radio_parasereditado_sim.setChecked(parasereditado_value == 'Sim')
+        self.radio_parasereditado_nao.setChecked(parasereditado_value == 'Não')
+
+        parasereditado_layout.addWidget(parasereditado_label)
+        parasereditado_layout.addStretch()
+        parasereditado_layout.addWidget(self.radio_parasereditado_sim)
+        parasereditado_layout.addWidget(self.radio_parasereditado_nao)
+        # Adiciona o novo layout ao layout principal do GroupBox
+        contratacao_layout.addLayout(parasereditado_layout)
+
 
         # # Configura layout do GroupBox
         contratacao_group_box.setLayout(contratacao_layout)

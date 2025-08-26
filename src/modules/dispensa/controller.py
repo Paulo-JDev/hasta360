@@ -8,6 +8,7 @@ from PyQt6.QtCore import *
 import pandas as pd
 from paths import CONTROLE_DADOS, TEMPLATE_DISPENSA_DIR
 import sqlite3
+from datetime import datetime
 import os
 from modules.dispensa.dados_api.api_consulta import ConsultaAPIDialog
 import webbrowser
@@ -260,10 +261,23 @@ class DispensaEletronicaController(QObject):
             with open(caminho_template, 'r', encoding='utf-8') as f:
                 mensagem_base = f.read()
 
+            data_sessao_str = data.get("data_sessao", "")
+            data_formatada = "[N/A]" # Valor padrão caso a data não seja válida
+            if data_sessao_str:
+                try:
+                    # Converte a string de data para um objeto datetime
+                    data_obj = datetime.strptime(data_sessao_str, '%Y-%m-%d')
+                    # Formata o objeto datetime para o padrão DD/MM/YYYY
+                    data_formatada = data_obj.strftime('%d/%m/%Y')
+                except ValueError:
+                    # Se o formato da data for inesperado, mantém o valor padrão
+                    print(f"Aviso: Formato de data inválido para '{data_sessao_str}'.")
+
             mensagem_final = mensagem_base.replace("{{numero-da-cp}}", str(data.get("cp", "[N/A]")))
             mensagem_final = mensagem_final.replace("{{NUP}}", str(data.get("nup", "[N/A]")))
             mensagem_final = mensagem_final.replace("{{numero da dispensa}}", str(data.get("id_processo", "[N/A]")))
             mensagem_final = mensagem_final.replace("{{email_responsavel}}", str(data.get("email", "[E-mail não informado]")))
+            mensagem_final = mensagem_final.replace("{{sessao_publica}}", str(data_formatada))
             
             assunto = f"Início da Sessão Pública - Dispensa Eletrônica: {data.get('id_processo')}"
 
