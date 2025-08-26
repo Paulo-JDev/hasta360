@@ -3,14 +3,14 @@ from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from paths import *
 from modules.utils.icon_loader import load_icons
-from assets.styles.styles import get_menu_button_style, get_menu_button_activated_style
+from assets.styles.styles import get_menu_button_style, get_menu_button_activated_style, get_full_dark_theme
 from modules.widgets import *
 from modules.config.config_widget import ConfigManager
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        print("Projeto Hasta360 - Versão 1.3.0")
+        print("Projeto Hasta360 - Versão 1.3.1")
         self.icons = load_icons()
         self.buttons = {}
         self.active_button = None
@@ -392,6 +392,8 @@ if __name__ == "__main__":
     import sys
 
     app = QApplication(sys.argv)
+    #dark_theme = get_full_dark_theme()
+    #app.setStyleSheet(dark_theme)
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
