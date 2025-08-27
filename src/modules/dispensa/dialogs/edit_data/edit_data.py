@@ -522,7 +522,7 @@ class EditarDadosWindow(QMainWindow):
         self.setor_responsavel_combo.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         # Adicionando as opções ao ComboBox
         divisoes = [
-            "Divisão de Abastecimento",
+            "Divisão de Municiamento",
             "Divisão de Finanças",
             "Divisão de Obtenção",
             "Divisão de Pagamento",
