@@ -294,6 +294,11 @@ class TableCreationWorker(QThread):
         ws = wb.active
         ws.title = "Formulário"
         
+        # --- NOVO: Define o estilo para células obrigatórias ---
+        obrigatorio_fill = PatternFill(start_color="FFFFCC", end_color="FFFFCC", fill_type="solid")
+        obrigatorio_font = Font(color="FF0000", bold=True)
+        # --- FIM NOVO ---
+
         # Adicionando título
         tipo = self.dados.get('tipo', '')
         numero = self.dados.get('numero', '')
@@ -324,19 +329,36 @@ class TableCreationWorker(QThread):
         # Preenchendo dados filtrados
         for i, (key, label) in enumerate(self.colunas_legiveis.items(), start=3):
             value = self.dados.get(key, '')  # Obtém o valor correspondente em `self.dados`
-            ws[f'A{i}'] = label
-            ws[f'B{i}'] = str(value)
-            ws[f'B{i}'].alignment = Alignment(wrap_text=True)
+            
+            # --- LÓGICA ATUALIZADA ---
+            cell_a = ws[f'A{i}']
+            cell_b = ws[f'B{i}']
+            
+            cell_a.value = label
+
+            # Se o valor for vazio ou None, usa a mensagem padrão
+            if not value:
+                cell_b.value = "LOCAL DE PREENCHIMENTO OBRIGATORIO"
+                cell_b.fill = obrigatorio_fill
+                cell_b.font = obrigatorio_font
+            else:
+                cell_b.value = str(value)
+
+            # Aplica estilos gerais
+            cell_b.alignment = Alignment(wrap_text=True)
             fill_color = "F2F2F2" if i % 2 == 0 else "FFFFFF"
             fill = PatternFill(start_color=fill_color, end_color=fill_color, fill_type="solid")
-            ws[f'A{i}'].fill = fill
-            ws[f'B{i}'].fill = fill
-            ws[f'A{i}'].alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+            cell_a.fill = fill
+            # Só aplica o preenchimento cinza se não for um campo obrigatório
+            if not cell_b.font.color or cell_b.font.color.rgb != "FFFF0000":
+                 cell_b.fill = fill
+            
+            cell_a.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
             ws.row_dimensions[i].height = 15
 
-            # Aplicando bordas finas a cada célula preenchida
-            for cell in [ws[f'A{i}'], ws[f'B{i}']]:
+            for cell in [cell_a, cell_b]:
                 cell.border = thin_border
+            # --- FIM DA LÓGICA ATUALIZADA ---
 
         # Salvando arquivo e emitindo o sinal com o caminho
         file_path = self.pasta_base / "formulario.xlsx"
