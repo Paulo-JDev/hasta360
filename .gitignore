@@ -11,6 +11,7 @@ __pycache__/
 *.zip
 *.pkg
 *.pyz
+src/database/json/config.json
 # Ignore all content in src/assets/pdf
 src/database/pdf/
 relatorios/
