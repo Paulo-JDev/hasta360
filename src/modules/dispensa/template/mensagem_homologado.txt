@@ -1,10 +1,6 @@
-Prezados,
-Aviso de Homologação de Processo
-
 A Dispensa Eletrônica nº **{{numero da dispensa}}** foi homologada.
 
-**NUP:** {{NUP}}
-**CP:** {{numero-da-cp}}
+SOL confeccionar solemp
 
 Favor dar prosseguimento às ações necessárias.
 

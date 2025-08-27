@@ -705,7 +705,7 @@ class EditarDadosWindow(QMainWindow):
         contratacao_layout.addLayout(custeio_layout)
 
         parasereditado_layout = QHBoxLayout()
-        parasereditado_label = QLabel("local para eu mudar(view)?") # Mude este texto quando souber o nome final
+        parasereditado_label = QLabel("PREFERÊNCIA ME/EPP?") # Mude este texto quando souber o nome final
         self.radio_parasereditado_sim = QRadioButton("Sim")
         self.radio_parasereditado_nao = QRadioButton("Não")
         self.parasereditado_group = QButtonGroup()
