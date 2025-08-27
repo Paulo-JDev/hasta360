@@ -6,6 +6,7 @@ from datetime import datetime
 from modules.utils.select_om import load_sigla_om
 import sqlite3
 from paths import ORGANIZACOES_FILE
+import json
 
 class AddItemDialog(QDialog):
     def __init__(self, icons, database_path, controle_om, parent=None):
@@ -13,20 +14,45 @@ class AddItemDialog(QDialog):
         self.icons = icons
         self.database_path = database_path
         self.controle_om = controle_om
-        self.om_details = {}  # Inicializa como dicionário vazio para evitar erros
+        self.om_details = {}  # Será populado pelo método load_om_data
         self.setWindowTitle("Adicionar Item")
         self.setWindowIcon(self.icons["plus"])
 
-        self.layout = QVBoxLayout(self)  # Inicializa o layout antes de adicionar widgets
-
+        self.layout = QVBoxLayout(self)
         self.setStyleSheet("QWidget { font-size: 14px; }")
-
         self.setup_ui()
 
-        # Carregar as siglas das OMs para o combo
-        load_sigla_om(ORGANIZACOES_FILE, self.sigla_om_cb, "")  # Passe o caminho do JSON corretamente
+        # Carrega os dados das OMs (siglas e detalhes)
+        self.load_om_data(ORGANIZACOES_FILE)
 
         self.load_next_numero()
+
+    # Adicione este novo método inteiro dentro da classe AddItemDialog
+    def load_om_data(self, json_path):
+        """Lê o JSON das organizações, popula o combobox e o dicionário de detalhes."""
+        try:
+            with open(json_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+
+            siglas = []
+            # Itera sobre a lista de organizações no JSON
+            for org in data.get('organizacoes', []):
+                sigla = org.get('Sigla')
+                if sigla:
+                    siglas.append(sigla)
+                    # Popula o dicionário self.om_details com os detalhes de cada OM
+                    self.om_details[sigla] = {
+                        'orgao_responsavel': org.get('Nome'),
+                        'uasg': org.get('UASG')
+                    }
+            
+            # Limpa e preenche o combobox com as siglas carregadas
+            self.sigla_om_cb.clear()
+            self.sigla_om_cb.addItems(sorted(siglas)) # Ordena as siglas em ordem alfabética
+
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            print(f"ERRO: Não foi possível carregar o arquivo de Organizações Militares: {e}")
+            QMessageBox.warning(self, "Erro de Arquivo", "Não foi possível carregar o arquivo de Organizações Militares (organizacoes.json).")
 
     def setup_ui(self):
         self.tipo_cb, self.numero_le, self.ano_le = self.setup_first_line()
@@ -164,8 +190,8 @@ class AddItemDialog(QDialog):
             'nup': self.nup_le.text(),
             'objeto': self.objeto_le.text(),
             'sigla_om': sigla_selected,
-            'orgao_responsavel': orgao_responsavel,
-            'uasg': uasg,
+            'orgao_responsavel': orgao_responsavel, 
+            'uasg': uasg, 
             'material_servico': material_servico,
             'com_disputa': com_disputa,
             'pesquisa_preco': pesquisa_preco,
