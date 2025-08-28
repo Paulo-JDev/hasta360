@@ -261,7 +261,9 @@ class DispensaEletronicaModel(QObject):
                 cnpj_matriz TEXT,
                 sequencial_pncp TEXT,
                 link_pncp TEXT,
-                comunicacao_padronizada TEXT             
+                comunicacao_padronizada TEXT,
+                campo_do_cp TEXT,
+                campo_ao_cp TEXT           
             )
         """):
             print("Falha ao criar a tabela 'controle_dispensas':", query.lastError().text())
@@ -332,8 +334,10 @@ class DispensaEletronicaModel(QObject):
             cnpj_matriz,
             sequencial_pncp,
             link_pncp,
-            comunicacao_padronizada
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            comunicacao_padronizada,
+            campo_do_cp,
+            campo_ao_cp
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(id_processo) DO UPDATE SET
             situacao=excluded.situacao,
             tipo=excluded.tipo,
@@ -378,7 +382,9 @@ class DispensaEletronicaModel(QObject):
             cnpj_matriz=excluded.cnpj_matriz,
             sequencial_pncp=excluded.sequencial_pncp,
             link_pncp=excluded.link_pncp,
-            comunicacao_padronizada=excluded.comunicacao_padronizada
+            comunicacao_padronizada=excluded.comunicacao_padronizada,
+            campo_do_cp=excluded.campo_do_cp,
+            campo_ao_cp=excluded.campo_ao_cp
         '''
 
         # Verifica se 'situacao' está dentro dos valores válidos
@@ -435,7 +441,9 @@ class DispensaEletronicaModel(QObject):
                     data.get('cnpj_matriz', '00394502000144'),
                     data.get('sequencial_pncp', ''),
                     data.get('link_pncp', ''),
-                    data.get('comunicacao_padronizada', '')
+                    data.get('comunicacao_padronizada', ''),
+                    data.get('campo_do_cp', ''),
+                    data.get('campo_ao_cp', '')
                 ))
                 conn.commit()
 
@@ -463,7 +471,7 @@ class CustomSqlTableModel(QSqlTableModel):
             "dias_para_recebimento", "horario_para_recebimento", "valor_total", 
             "acao_interna", "fonte_recursos", "natureza_despesa", "unidade_orcamentaria", 
             "ptres", "atividade_custeio", "parasereditado", "comentarios", "justificativa", "cnpj_matriz","sequencial_pncp", "link_pncp", 
-            "comunicacao_padronizada"
+            "comunicacao_padronizada", "campo_do_cp", "campo_ao_cp"
         ]
 
         

@@ -24,6 +24,8 @@ COLUNAS_LEGIVEIS = {
     'atividade_custeio': 'Atividade de Custeio',
     'justificativa': 'Justificativa',
     'comunicacao_padronizada': 'Comunicação Padronizada (CP), Ex: 60-25',
+    'campo_do_cp': 'Campo Do(a) da CP',
+    'campo_ao_cp': 'Campo Ao da CP',
 }
 
 VALID_SITUATIONS = [

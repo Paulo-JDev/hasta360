@@ -308,7 +308,9 @@ class EditarDadosWindow(QMainWindow):
             'telefone': self.telefone_edit.text(),
             'dias_recebimento': self.dias_edit.text(),
             'horario_recebimento': self.horario_edit.text(),
-            'justificativa': self.justificativa_edit.toPlainText()
+            'justificativa': self.justificativa_edit.toPlainText(),
+            'campo_do_cp': self.campo_do_cp_edit.text(),
+            'campo_ao_cp': self.campo_ao_cp_edit.text()
         })
 
         data_to_save.update({
@@ -808,6 +810,23 @@ class EditarDadosWindow(QMainWindow):
         par_layout.addWidget(prioridade)
         par_layout.addWidget(self.prioridade_combo)        
         layout.addLayout(par_layout)
+
+        # --- NOVOS CAMPOS ABAIXO ---
+        do_ao_cp_layout = QHBoxLayout()
+        do_cp_label = QLabel("Campo Do(a) da CP:")
+        # Converta o valor para string usando str()
+        self.campo_do_cp_edit = QLineEdit(str(self.dados.get('campo_do_cp', '')))
+        do_ao_cp_layout.addWidget(do_cp_label)
+        do_ao_cp_layout.addWidget(self.campo_do_cp_edit)
+
+        ao_cp_label = QLabel("Campo Ao da CP:")
+        # Converta o valor para string usando str()
+        self.campo_ao_cp_edit = QLineEdit(str(self.dados.get('campo_ao_cp', '')))
+        do_ao_cp_layout.addWidget(ao_cp_label)
+        do_ao_cp_layout.addWidget(self.campo_ao_cp_edit)
+        layout.addLayout(do_ao_cp_layout)
+
+        # --- FIM NOVOS CAMPOS ---
                 
         # Endereço
         endereco = QLabel("Endereço:")
@@ -1414,6 +1433,8 @@ class EditarDadosWindow(QMainWindow):
             self.dias_edit.setText(obter_valor('Dias para Recebimento'))
             self.horario_edit.setText(obter_valor('Horário para Recebimento'))
             self.justificativa_edit.setPlainText(obter_valor('Justificativa'))
+            self.campo_do_cp_edit.setText(obter_valor('Campo Do(a) da CP'))
+            self.campo_ao_cp_edit.setText(obter_valor('Campo Ao da CP'))
             
             # Configurar o estado do botão de rádio com base no valor encontrado
             atividade_custeio_valor = obter_valor('Atividade de Custeio')
