@@ -824,15 +824,9 @@ padrao_4 = (
 #     r"Propostas\s+do\s+Item"  # Finaliza a captura em "Propostas do Item"
 # )
 
-padrao_melhor_lance = (
-    r"melhor\s+lance\s*:\s*R\$\s*(?P<melhor_lance>[\d,.]+)"
-    r"(?:\s*\(unitário\)\s*/\s*R\$\s*(?P<total_lance>[\d,.]+)\s*\(total\))?"
-    r"(?:,\s+valor\s+negociado\s*:\s*R\$\s*(?P<valor_negociado>[\d,.]+))?\s+"
-)
-
-# Outros padrões mantidos conforme solicitado
+# O novo bloco que você vai colocar no lugar do antigo:
 padrao_cpf_od = (
-    r"(Adjucado|Adjudicado)\s+e\s+Homologado\s+por\s+CPF\s+"
+    r"(?:Adjucado|Adjudicado)\s+e\s+Homologado\s+por\s+CPF\s+"
     r"(?P<cpf_od>\*\*\*.\d{3}.\*\*\*-\*\d{1})\s+-\s+"
     r"(?P<ordenador_despesa>[^\d,]+?)\s+para\s+"
 )
@@ -842,8 +836,11 @@ padrao_empresa = (
     r"\s*,\s*CNPJ\s+(?P<cnpj>\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}),\s+"
 )
 
-# Combinação dos padrões para formar o padrao_3 final
-padrao_3 = padrao_cpf_od + padrao_empresa + padrao_melhor_lance + r"Propostas\s+do\s+Item"
+padrao_bloco_valores = (
+    r"(?P<bloco_valores>.*?)(?=\s*Propostas\s+do\s+Item)"
+)
+
+padrao_3 = padrao_cpf_od + padrao_empresa + padrao_bloco_valores
 
 
 def processar_item(match, conteudo: str, ultima_posicao_processada: int, padrao_3: str, padrao_4: str) -> dict:
@@ -857,37 +854,35 @@ def processar_item(match, conteudo: str, ultima_posicao_processada: int, padrao_
         "situacao": item.get('situacao', 'N/A')
     }
 
-    # Somente tenta buscar correspondências de padrões adicionais se a situação não for 'Anulado e Homologado'
-    if item_data['situacao'] not in ['Anulado e Homologado', 'Revogado e Homologado']:
-        # Processamento do padrão 3
-        match_3 = re.search(padrao_3, conteudo[ultima_posicao_processada:], re.DOTALL | re.IGNORECASE)
+    # Só processa os detalhes do vencedor se o item foi Adjudicado e Homologado
+    if item_data['situacao'] == 'Adjudicado e Homologado':
+        match_3 = re.search(padrao_3, conteudo, re.DOTALL | re.IGNORECASE)
+        
         if match_3:
-            ultima_posicao_processada += match_3.end()
-            empresa_name = match_3.group('empresa').replace('\n', ' ').strip() if match_3.group('empresa') else 'N/A'
-            cnpj_value = match_3.group('cnpj').replace(" ", "").replace("\n", "") if match_3.group('cnpj') else 'N/A'
-            melhor_lance = match_3.group('melhor_lance').replace(" ", "").replace("\n", "") if match_3.group('melhor_lance') else 'N/A'
-            valor_negociado = match_3.group('valor_negociado')
+            # Extrai os dados básicos do vencedor
+            item_data["ordenador_despesa"] = match_3.group('ordenador_despesa').strip()
+            item_data["empresa"] = match_3.group('empresa').replace('\n', ' ').strip()
+            item_data["cnpj"] = match_3.group('cnpj').strip()
 
-            # Remove espaços e quebras de linha se valor_negociado não for None
-            valor_negociado = valor_negociado.replace(" ", "").replace("\n", "") if valor_negociado else 'N/A'
+            # Pega o bloco de texto que contém os valores
+            bloco_valores = match_3.group('bloco_valores')
+            
+            # Extrai o "melhor lance" de dentro do bloco
+            match_lance = re.search(r"melhor\s+lance\s*:\s*R\$\s*([\d,.]+)", bloco_valores)
+            item_data["melhor_lance"] = match_lance.group(1) if match_lance else 'N/A'
 
-            item_data.update({
-                "melhor_lance": melhor_lance,
-                "valor_negociado": valor_negociado,
-                "ordenador_despesa": match_3.group('ordenador_despesa') or 'N/A',
-                "empresa": empresa_name,
-                "cnpj": cnpj_value,
-            })
+            # Extrai o "valor negociado" de dentro do bloco (se existir)
+            match_negociado = re.search(r"valor\s+negociado\s*:\s*R\$\s*([\d,.]+)", bloco_valores)
+            item_data["valor_negociado"] = match_negociado.group(1) if match_negociado else 'N/A'
+            
+            # Avança a busca pela marca/fabricante a partir do final do bloco do vencedor
+            posicao_final_match_3 = match_3.end()
+            match_4 = re.search(padrao_4, conteudo[posicao_final_match_3:], re.DOTALL | re.IGNORECASE)
+            if match_4:
+                item_data["marca_fabricante"] = match_4.group('marca_fabricante').strip() or 'N/A'
+                item_data["modelo_versao"] = match_4.group('modelo_versao').strip() or 'N/A'
 
-        # Processamento do padrão 4
-        match_4 = re.search(padrao_4, conteudo[ultima_posicao_processada:], re.DOTALL | re.IGNORECASE)
-        if match_4:
-            item_data.update({
-                "marca_fabricante": match_4.group('marca_fabricante') or 'N/A',
-                "modelo_versao": match_4.group('modelo_versao') or 'N/A',
-            })
-
-    return item_data, ultima_posicao_processada
+    return item_data, ultima_posicao_processada # A variável ultima_posicao_processada não é mais necessária, mas mantemos para compatibilidad
 
 def create_dataframe_from_pdf_files(extracted_data):
     """
