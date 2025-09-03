@@ -5,6 +5,8 @@ from pathlib import Path
 from PyQt6.QtWidgets import *
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
+from paths.base_path import ICONS_DIR
+from paths.dispensa.dispensa_path import TEMPLATE_DISPENSA_DIR
 from src.config.diretorios import *
 import fitz
 from docxtpl import DocxTemplate
@@ -159,15 +161,20 @@ class PDFAddDialog(QDialog):
     def show_page(self, page_number):
         if self.document:
             page = self.document.load_page(page_number)
-            mat = fitz.Matrix(5, 5)  # Ajuste para a escala desejada, mantém alta qualidade
+            
+            # Renderiza a página com 1.5x o tamanho original para manter a boa qualidade.
+            mat = fitz.Matrix(1.5, 1.5)
             pix = page.get_pixmap(matrix=mat)
+            
             img = QImage(pix.samples, pix.width, pix.height, pix.stride, QImage.Format.Format_RGB888)
             pixmap = QPixmap.fromImage(img)
+            
             self.scene.clear()
             self.scene.addPixmap(pixmap)
-            # Aplica o fator de escala inicial de 50%
-            self.pdf_view.resetTransform()
-            self.pdf_view.scale(0.5, 0.5)
+            
+            # Aplica o zoom inicial definido pelo slider (que começa em 50%)
+            self.adjust_zoom(self.zoom_slider.value())
+            
             # Atualiza o contador de páginas
             self.page_label.setText(f"{page_number + 1} de {self.document.page_count}")
 
@@ -740,6 +747,13 @@ class ConsolidarDocumentos:
         if docx_path:
             self.abrirDocumento(docx_path)
 
+    def get_all_pdfs(self, directory):
+        pdf_files = list(directory.glob("*.pdf"))
+        if not pdf_files:
+            return None
+        # Retorna a lista de todos os PDFs encontrados
+        return pdf_files
+
     def gerar_autorizacao(self):
         self.gerar_e_abrir_documento("autorizacao_dispensa", "1. Autorizacao", "Autorizacao para abertura de Processo Administrativo")
 
@@ -752,7 +766,8 @@ class ConsolidarDocumentos:
             {"template": "tr", "subfolder": "2. CP e anexos/TR", "desc": "Termo de Referencia", "cover": "tr.pdf"},
             {"subfolder": "2. CP e anexos/TR/Pesquisa de Preços", "cover": "anexo-tr.pdf"},
             {"template": "dec_adeq", "subfolder": "2. CP e anexos/Declaracao de Adequação Orçamentária", "desc": "Declaracao de Adequação Orçamentária", "cover": "dec_adeq.pdf"},
-            {"subfolder": "2. CP e anexos/Declaracao de Adequação Orçamentária/Relatório do PDM-Catser", "cover": "anexo-dec-adeq.pdf"},
+            # AQUI ESTÁ A MUDANÇA PRINCIPAL
+            {"subfolder": "2. CP e anexos/Declaracao de Adequação Orçamentária/Relatório do PDM-Catser", "cover": "anexo-dec-adeq.pdf", "get_all": True},
             {"template": "justificativas", "subfolder": "2. CP e anexos/Justificativas Relevantes", "desc": "Justificativas Relevantes", "cover": "justificativas.pdf"},
         ]
 
@@ -769,9 +784,19 @@ class ConsolidarDocumentos:
                             pdf_info["cover_path"] = TEMPLATE_DISPENSA_DIR / doc["cover"]
                         pdf_paths.append(pdf_info)
             else:
-                pdf_path = self.get_latest_pdf(self.pasta_base / self.nome_pasta / doc["subfolder"])
+                # Lógica ajustada para usar get_all_pdfs quando necessário
+                if doc.get("get_all"):
+                    pdf_path = self.get_all_pdfs(self.pasta_base / self.nome_pasta / doc["subfolder"])
+                else:
+                    pdf_path = self.get_latest_pdf(self.pasta_base / self.nome_pasta / doc["subfolder"])
+
                 if pdf_path:
-                    pdf_paths.append({"pdf_path": pdf_path, "cover_path": TEMPLATE_DISPENSA_DIR / doc["cover"]})
+                    # Garante que pdf_path seja sempre uma lista para o append
+                    if not isinstance(pdf_path, list):
+                        pdf_path = [pdf_path]
+                    
+                    for p in pdf_path:
+                        pdf_paths.append({"pdf_path": p, "cover_path": TEMPLATE_DISPENSA_DIR / doc["cover"]})
                 else:
                     QMessageBox.warning(None, "Erro", f"Arquivo PDF não encontrado: {doc['subfolder']}")
 

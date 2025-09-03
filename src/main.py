@@ -10,7 +10,7 @@ from modules.config.config_widget import ConfigManager
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        print("Projeto Hasta360 - Versão 2.3.7")
+        print("Projeto Hasta360 - Versão 2.3.8")
         self.icons = load_icons()
         self.buttons = {}
         self.active_button = None
