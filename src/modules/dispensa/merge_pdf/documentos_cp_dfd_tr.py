@@ -24,17 +24,31 @@ class PDFAddDialog(QDialog):
 
     def __init__(self, df_registro_selecionado, icons_dir, pastas_necessarias, pasta_base, parent=None):
         super().__init__(parent)
+        
+        # --- INÍCIO DA NOVA LÓGICA ---
+        self.document = None  # Previne o erro de travamento se nenhum PDF for carregado
+        
+        # A variável 'pasta_base' DEVE ser o caminho completo para a pasta do processo.
+        # Este print vai nos mostrar exatamente o que está chegando aqui.
+        print("-" * 60)
+        print("INICIANDO O VISUALIZADOR DE ANEXOS (DEBUG)")
+        print(f"--> O caminho base recebido foi: '{pasta_base}'")
+        print("-" * 60)
+        
+        # Garante que estamos trabalhando com um objeto de caminho (Path)
+        self.pasta_base = Path(pasta_base)
+        # --- FIM DA NOVA LÓGICA ---
+
         self.df_registro_selecionado = df_registro_selecionado
         self.ICONS_DIR = Path(icons_dir)
         self.pastas_necessarias = pastas_necessarias
-        self.pasta_base = pasta_base
         self.icon_existe = QIcon(str(self.ICONS_DIR / "checked.png"))
         self.icon_nao_existe = QIcon(str(self.ICONS_DIR / "cancel.png"))
         self.id_processo = df_registro_selecionado['id_processo'].iloc[0]
         self.tipo = df_registro_selecionado['tipo'].iloc[0]
         self.ano = df_registro_selecionado['ano'].iloc[0]
         self.numero = df_registro_selecionado['numero'].iloc[0]
-        self.objeto = df_registro_selecionado['objeto'].iloc[0]  # Supondo que 'objeto' é uma coluna no DataFrame
+        self.objeto = df_registro_selecionado['objeto'].iloc[0]
         self.setWindowTitle('Adicionar PDF')
         self.setup_ui()
 
@@ -216,10 +230,15 @@ class PDFAddDialog(QDialog):
 
         return header_widget
 
+    # CÓDIGO CORRIGIDO
     def add_initial_items(self):
-        id_processo_modificado = self.id_processo.replace("/", "-")
-        objeto_modificado = self.objeto.replace("/", "-")
-        base_path = self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}'
+        # --- INÍCIO DA NOVA LÓGICA ---
+        # A CAUSA DO ERRO ESTAVA AQUI. O código antigo tentava montar o caminho novamente.
+        # Esta nova versão usa o 'self.pasta_base' diretamente, que já é o caminho correto.
+        base_path = self.pasta_base
+        
+        print(f"--> Montando a lista de anexos usando o caminho final: '{base_path}'\n")
+        # --- FIM DA NOVA LÓGICA ---
 
         initial_items = {
             "DFD": [
@@ -232,6 +251,7 @@ class PDFAddDialog(QDialog):
             "Declaração de Adequação Orçamentária": [
                 ("Relatório do PDM-Catser", base_path / '2. CP e anexos' / 'Declaracao de Adequação Orçamentária' / 'Relatório do PDM-Catser')
             ]
+            # Adicione aqui outras pastas se necessário, seguindo o mesmo padrão.
         }
 
         for parent_text, children in initial_items.items():
@@ -245,11 +265,11 @@ class PDFAddDialog(QDialog):
                 print(f"Verificando pasta: {pasta}")
                 pdf_file = self.verificar_arquivo_pdf(pasta)
                 if pdf_file:
-                    print(f"PDF encontrado: {pdf_file}")
+                    print(f"  [SUCESSO] PDF encontrado: {pdf_file.name}\n")
                     child_item.setIcon(0, self.icon_existe)
-                    child_item.setData(0, Qt.ItemDataRole.UserRole, str(pdf_file))  # Armazena o caminho do PDF
+                    child_item.setData(0, Qt.ItemDataRole.UserRole, str(pdf_file))
                 else:
-                    print("Nenhum PDF encontrado")
+                    print(f"  [FALHA] Nenhum PDF encontrado no diretório.\n")
                     child_item.setIcon(0, self.icon_nao_existe)
 
             parent_item.setExpanded(True)
