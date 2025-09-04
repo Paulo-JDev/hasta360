@@ -13,6 +13,7 @@ from docxtpl import DocxTemplate
 from PyPDF2 import PdfMerger
 from paths import load_config_path_id, save_config, TEMPLATE_DISPENSA_DIR
 from modules.dispensa.dialogs.edit_data.widgets.gerenciador_anexos.pdf_add_dialog import ProgressDialog
+#from merge_pdf.merge_anexos import merge_pdfs_anexos
 import sys
 import subprocess
 from pathlib import Path
@@ -686,7 +687,7 @@ class ConsolidarDocumentos(QObject):
             merger.close()
 
             os.startfile(output_pdf_path)
-            print(f"PDF concatenado salvo e aberto: {output_pdf_path}")
+            print(f"(no gerar_documentos no gerenciador_anexo, gerar_dumentos)PDF concatenado salvo e aberto: {output_pdf_path}")
         except Exception as e:
             print(f"Erro ao concatenar os PDFs: {e}")
             QMessageBox.warning(None, "Erro", f"Erro ao concatenar os PDFs: {e}")

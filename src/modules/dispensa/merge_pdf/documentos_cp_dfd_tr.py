@@ -840,7 +840,7 @@ class ConsolidarDocumentos:
             merger.close()
 
             os.startfile(output_pdf_path)
-            print(f"PDF concatenado salvo e aberto: {output_pdf_path}")
+            print(f"(fora do dialogs) PDF concatenado salvo e aberto: {output_pdf_path}")
         except Exception as e:
             print(f"Erro ao concatenar os PDFs: {e}")
             QMessageBox.warning(None, "Erro", f"Erro ao concatenar os PDFs: {e}")

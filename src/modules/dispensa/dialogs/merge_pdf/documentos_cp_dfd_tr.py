@@ -384,6 +384,13 @@ class ConsolidarDocumentos:
             'assinatura_autoridade': 'Exemplo: Assinatura digitalizada do Diretor de Compras'
         }
 
+    def get_all_pdfs_in_directory(self, directory):
+        """Retorna uma lista de todos os arquivos PDF em um diretório."""
+        if not directory.exists():
+            return []
+        # Retorna uma lista com os caminhos de todos os arquivos .pdf
+        return sorted(list(directory.glob("*.pdf"))) # Usamos sorted() para manter uma ordem consistente
+
     def editar_modelo(self, button_font_size=18, icon_size=QSize(40, 40)):
         dialog = QDialog()
         dialog.setWindowTitle("Editar Template")
@@ -748,12 +755,16 @@ class ConsolidarDocumentos:
         documentos = [
             {"template": "cp", "subfolder": "2. CP e anexos", "desc": "Comunicacao Padronizada"},
             {"template": "dfd", "subfolder": "2. CP e anexos/DFD", "desc": "Documento de Formalizacao de Demanda", "cover": "dfd.pdf"},
+            # --- INÍCIO DA MODIFICAÇÃO ---
             {"subfolder": "2. CP e anexos/DFD/Anexo A - Relatorio Safin", "cover": "anexo-a-dfd.pdf"},
             {"subfolder": "2. CP e anexos/DFD/Anexo B - Especificações e Quantidade", "cover": "anexo-b-dfd.pdf"},
             {"template": "tr", "subfolder": "2. CP e anexos/TR", "desc": "Termo de Referencia", "cover": "tr.pdf"},
             {"subfolder": "2. CP e anexos/TR/Pesquisa de Preços", "cover": "anexo-tr.pdf"},
             {"template": "dec_adeq", "subfolder": "2. CP e anexos/Declaracao de Adequação Orçamentária", "desc": "Declaracao de Adequação Orçamentária", "cover": "dec_adeq.pdf"},
             {"subfolder": "2. CP e anexos/Declaracao de Adequação Orçamentária/Relatório do PDM-Catser", "cover": "anexo-dec-adeq.pdf"},
+            # Adicione os outros documentos que faltavam na lista para serem incluídos no merge
+            {"subfolder": "2. CP e anexos/ETP", "cover": "etp.pdf"},
+            {"subfolder": "2. CP e anexos/MR", "cover": "mr.pdf"},
             {"template": "justificativas", "subfolder": "2. CP e anexos/Justificativas Relevantes", "desc": "Justificativas Relevantes", "cover": "justificativas.pdf"},
         ]
 
@@ -767,14 +778,29 @@ class ConsolidarDocumentos:
                     if pdf_path:
                         pdf_info = {"pdf_path": pdf_path}
                         if "cover" in doc:
-                            pdf_info["cover_path"] = TEMPLATE_DISPENSA_DIR / doc["cover"]
+                            # Adiciona a capa se ela existir
+                            cover_path = TEMPLATE_DISPENSA_DIR / doc["cover"]
+                            if cover_path.exists():
+                                pdf_info["cover_path"] = cover_path
                         pdf_paths.append(pdf_info)
             else:
-                pdf_path = self.get_latest_pdf(self.pasta_base / self.nome_pasta / doc["subfolder"])
-                if pdf_path:
-                    pdf_paths.append({"pdf_path": pdf_path, "cover_path": TEMPLATE_DISPENSA_DIR / doc["cover"]})
+                # Esta é a parte principal da correção: buscar TODOS os PDFs
+                anexo_folder = self.pasta_base / self.nome_pasta / doc["subfolder"]
+                # Chama a NOVA função que criamos
+                lista_de_anexos_pdf = self.get_all_pdfs_in_directory(anexo_folder)
+                
+                if lista_de_anexos_pdf:
+                    # Adiciona a capa da seção primeiro, se houver
+                    if "cover" in doc:
+                        cover_path = TEMPLATE_DISPENSA_DIR / doc["cover"]
+                        if cover_path.exists():
+                            pdf_paths.append({"pdf_path": cover_path}) # Adiciona a capa como um PDF normal
+                    
+                    # Adiciona CADA PDF encontrado na pasta do anexo
+                    for pdf_file in lista_de_anexos_pdf:
+                        pdf_paths.append({"pdf_path": pdf_file}) # Adiciona o anexo
                 else:
-                    QMessageBox.warning(None, "Erro", f"Arquivo PDF não encontrado: {doc['subfolder']}")
+                    QMessageBox.warning(None, "Aviso", f"Nenhum arquivo PDF encontrado em: {doc['subfolder']}")
 
         self.concatenar_e_abrir_pdfs(pdf_paths)
            
@@ -787,16 +813,14 @@ class ConsolidarDocumentos:
         merger = PdfMerger()
 
         try:
-            for pdf in pdf_paths:
-                if "cover_path" in pdf:
-                    merger.append(str(pdf["cover_path"]))
-                merger.append(str(pdf["pdf_path"]))
+            for pdf_info in pdf_paths:
+                merger.append(str(pdf_info["pdf_path"]))
 
             merger.write(str(output_pdf_path))
             merger.close()
 
             os.startfile(output_pdf_path)
-            print(f"PDF concatenado salvo e aberto: {output_pdf_path}")
+            print(f"(dentro da pasta dialogs) PDF concatenado salvo e aberto: {output_pdf_path}")
         except Exception as e:
             print(f"Erro ao concatenar os PDFs: {e}")
             QMessageBox.warning(None, "Erro", f"Erro ao concatenar os PDFs: {e}")
