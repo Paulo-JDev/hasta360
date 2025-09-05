@@ -316,87 +316,85 @@ class Worker(QThread):
         # Retorna uma lista com os caminhos de todos os arquivos .pdf, ordenados para consistência
         return sorted(list(directory.glob("*.pdf")))
 
-    def get_valid_pdfs_in_directory(self, directory):
-        """
-        Busca todos os PDFs em um diretório, mas filtra e retorna apenas aqueles
-        que NÃO contêm a frase 'Nenhum registro encontrado'.
-        """
-        if not directory.exists():
-            return []
-        
-        all_pdfs = sorted(list(directory.glob("*.pdf")))
-        valid_pdfs = []
-
-        for pdf_path in all_pdfs:
-            try:
-                doc = fitz.open(pdf_path)
-                text = ""
-                for page in doc:
-                    text += page.get_text("text")
-                doc.close()
-
-                # AQUI ACONTECE O FILTRO
-                if "Nenhum registro encontrado" in text:
-                    print(f"Ignorando PDF vazio: {pdf_path.name}")
-                    continue  # Pula este arquivo, não adiciona na lista
-
-                valid_pdfs.append(pdf_path) # Adiciona o PDF à lista se for válido
-            except Exception as e:
-                print(f"Não foi possível ler o arquivo {pdf_path.name}: {e}")
-
-        return valid_pdfs
-
     def run(self):
-        pdf_paths = []
+        """
+        Lógica principal para gerar, encontrar e preparar os PDFs para a mesclagem.
+        """
+        pdf_paths = [] # Lista final de PDFs a serem mesclados
 
-        for doc in self.documentos:
-            doc_desc = doc.get('desc', doc.get('subfolder', 'Documento desconhecido'))
+        # Lista completa de documentos a serem processados.
+        # Adicionei os que faltavam para garantir que ETP, MR, etc., sejam incluídos.
+        documentos_a_processar = [
+            {"template": "cp", "subfolder": "2. CP e anexos", "desc": "Comunicacao Padronizada"},
+            {"template": "dfd", "subfolder": "2. CP e anexos/DFD", "desc": "Documento de Formalizacao de Demanda", "cover": "dfd.pdf"},
+            {"subfolder": "2. CP e anexos/DFD/Anexo A - Relatorio Safin", "cover": "anexo-a-dfd.pdf"},
+            {"subfolder": "2. CP e anexos/DFD/Anexo B - Especificações e Quantidade", "cover": "anexo-b-dfd.pdf"},
+            {"template": "tr", "subfolder": "2. CP e anexos/TR", "desc": "Termo de Referencia", "cover": "tr.pdf"},
+            {"subfolder": "2. CP e anexos/TR/Pesquisa de Preços", "cover": "anexo-tr.pdf"},
+            {"template": "dec_adeq", "subfolder": "2. CP e anexos/Declaracao de Adequação Orçamentária", "desc": "Declaracao de Adequação Orçamentária", "cover": "dec_adeq.pdf"},
+            {"subfolder": "2. CP e anexos/Declaracao de Adequação Orçamentária/Relatório do PDM-Catser", "cover": "anexo-dec-adeq.pdf"},
+            {"subfolder": "2. CP e anexos/ETP", "cover": "etp.pdf"},
+            {"subfolder": "2. CP e anexos/MR", "cover": "mr.pdf"},
+            {"template": "justificativas", "subfolder": "2. CP e anexos/Justificativas Relevantes", "desc": "Justificativas Relevantes", "cover": "justificativas.pdf"},
+        ]
+
+        # O atributo `self.documentos` que vem da classe `GerarDocumentos` pode ter uma lista customizada,
+        # então vamos usar ela se existir, senão usamos a lista completa.
+        lista_final_docs = self.documentos if self.documentos else documentos_a_processar
+        
+        for doc in lista_final_docs:
+            doc_desc = doc.get('desc', os.path.basename(doc.get('subfolder')))
+
+            # Emite sinal para a UI mostrar que está trabalhando neste documento
+            if "template" in doc:
+                for i in range(4):
+                    status = "sendo gerado" + "." * (i % 4)
+                    self.update_status.emit(doc_desc, status, 50)
+                    QThread.msleep(200) # Pequena pausa para efeito visual
 
             if "template" in doc:
-                # Geração de documentos a partir de templates (sem alteração)
-                for i in range(3):
-                    status = "sendo gerado" + "." * i
-                    self.update_status.emit(doc_desc, status, 50)
-                    QThread.msleep(200)
-
                 docx_path = self.gerarDocumento(doc["template"], doc["subfolder"], doc["desc"])
                 if docx_path:
                     pdf_path = self.salvarPDF(docx_path)
                     if pdf_path:
-                        pdf_info = {"pdf_path": pdf_path}
+                        # LÓGICA CORRIGIDA: Adiciona capa e documento como itens separados na lista
                         if "cover" in doc:
                             cover_path = TEMPLATE_DISPENSA_DIR / doc["cover"]
                             if cover_path.exists():
-                                pdf_info["cover_path"] = cover_path
-                        pdf_paths.append(pdf_info)
+                                pdf_paths.append({"pdf_path": cover_path})
+                        pdf_paths.append({"pdf_path": pdf_path})
             else:
-                # LÓGICA PARA ANEXOS: Buscar e filtrar PDFs existentes
+                # LÓGICA CORRIGIDA: Usa a nova função para pegar TODOS os PDFs da pasta
                 anexo_folder = self.pasta_base / self.nome_pasta / doc["subfolder"]
-                
-                # AQUI ESTÁ A MUDANÇA: Usamos a função que filtra os vazios
-                valid_anexo_pdfs = self.get_valid_pdfs_in_directory(anexo_folder)
+                lista_de_anexos_pdf = self.get_all_pdfs_in_directory(anexo_folder)
 
-                if valid_anexo_pdfs:
-                    # Adiciona a capa da seção, se houver
+                if lista_de_anexos_pdf:
+                    # Adiciona a capa da seção primeiro, se existir
                     if "cover" in doc:
                         cover_path = TEMPLATE_DISPENSA_DIR / doc["cover"]
                         if cover_path.exists():
                             pdf_paths.append({"pdf_path": cover_path})
-
-                    # Adiciona CADA PDF VÁLIDO (original) encontrado
-                    for pdf_file in valid_anexo_pdfs:
+                    
+                    # Adiciona CADA PDF encontrado na pasta
+                    for pdf_file in lista_de_anexos_pdf:
                         pdf_paths.append({"pdf_path": pdf_file})
                 else:
-                    print(f"Nenhum anexo válido encontrado em: {doc['subfolder']}")
+                    print(f"Aviso: Nenhum PDF encontrado em: {doc['subfolder']}")
 
+            # Atualiza o status para "concluído"
             if "template" in doc:
                 self.update_status.emit(doc_desc, "concluído", 100)
 
+        # Após o loop, chama a função de merge
         self.concatenar_e_abrir_pdfs(pdf_paths)
         self.task_complete.emit()
 
     def concatenar_e_abrir_pdfs(self, pdf_paths):
+        """
+        FUNÇÃO SIMPLIFICADA: Mescla uma lista de PDFs.
+        """
         if not pdf_paths:
+            # Usar QMetaObject.invokeMethod para garantir que o QMessageBox rode na thread principal da GUI
             QMetaObject.invokeMethod(QApplication.instance(), 
                                      lambda: QMessageBox.warning(None, "Atenção", "Nenhum PDF foi encontrado ou gerado para a consolidação."),
                                      Qt.ConnectionType.QueuedConnection)
@@ -406,15 +404,14 @@ class Worker(QThread):
         merger = PdfMerger()
 
         try:
+            # Loop simplificado para adicionar cada PDF da lista
             for pdf_info in pdf_paths:
-                # Adiciona a capa se existir
-                if "cover_path" in pdf_info and Path(pdf_info["cover_path"]).exists():
-                    merger.append(str(pdf_info["cover_path"]))
-                
-                # Adiciona o PDF principal
-                if "pdf_path" in pdf_info and Path(pdf_info["pdf_path"]).exists():
-                    merger.append(str(pdf_info["pdf_path"]))
-
+                pdf_to_add = pdf_info.get("pdf_path")
+                if pdf_to_add and Path(pdf_to_add).exists():
+                    merger.append(str(pdf_to_add))
+                else:
+                    print(f"Aviso: Arquivo não encontrado ou inválido e será ignorado: {pdf_to_add}")
+            
             if not merger.inputs:
                 QMetaObject.invokeMethod(QApplication.instance(), 
                                          lambda: QMessageBox.warning(None, "Atenção", "Nenhum arquivo PDF válido foi encontrado para a mesclagem."),
@@ -425,8 +422,10 @@ class Worker(QThread):
             merger.write(str(output_pdf_path))
             merger.close()
 
+            # Abre o PDF utilizando QDesktopServices
             QDesktopServices.openUrl(QUrl.fromLocalFile(str(output_pdf_path)))
             print(f"PDF concatenado salvo e aberto: {output_pdf_path}")
+
         except Exception as e:
             error_message = f"Erro ao concatenar os PDFs: {e}"
             print(error_message)
