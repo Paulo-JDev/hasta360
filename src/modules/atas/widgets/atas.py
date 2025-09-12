@@ -413,26 +413,39 @@ class GerarAtaWidget(QWidget):
         # Iniciar controle de número sequencial com o valor inicial passado
         numero_controle_atual = int(numero_controle)
 
-        combinacoes = dataframe[['uasg', 'num_pregao', 'ano_pregao', 'empresa']].drop_duplicates().values
+        # 1. Obter a lista de empresas únicas
+        empresas_unicas = dataframe['empresa'].dropna().unique()
 
         if 'numero_ata' not in dataframe.columns:
             dataframe['numero_ata'] = None
 
-        for uasg, num_pregao, ano_pregao, empresa in combinacoes:
-            if not pd.isna(num_pregao) and not pd.isna(ano_pregao) and not pd.isna(empresa):
-                registros_empresa = dataframe[dataframe['empresa'] == empresa]
-                path_subpasta = criar_diretorio(Path.cwd() / "relatorios", int(num_pregao), int(ano_pregao), empresa)
+        # 2. Loop através de cada empresa única
+        for empresa in empresas_unicas:
+            # 3. Obter todos os registros (itens) para esta empresa
+            registros_empresa = dataframe[dataframe['empresa'] == empresa]
+            
+            # Pega os dados do pregão do primeiro item (para nomear a pasta)
+            # Assumimos que, para o propósito da pasta, qualquer um dos pregões serve.
+            if not registros_empresa.empty:
+                primeiro_registro = registros_empresa.iloc[0]
+                num_pregao = primeiro_registro['num_pregao']
+                ano_pregao = primeiro_registro['ano_pregao']
 
-                # Armazena o caminho do diretório principal (onde as subpastas são criadas)
-                self.pasta_principal_criada = path_subpasta.parent
+                if not pd.isna(num_pregao) and not pd.isna(ano_pregao):
+                    # Cria o diretório para a empresa
+                    path_subpasta = criar_diretorio(Path.cwd() / "relatorios", int(num_pregao), int(ano_pregao), empresa)
 
-                # Passa o número de controle atual e incrementa para o próximo
-                numero_ata = self.processar_empresa(registros_empresa, empresa, path_subpasta, numero_controle_atual)
-                dataframe.loc[dataframe['empresa'] == empresa, 'numero_ata'] = numero_ata
-                
-                numero_controle_atual += 1  # Incrementa para a próxima iteração
+                    # Armazena o caminho do diretório principal
+                    self.pasta_principal_criada = path_subpasta.parent
 
-        print(dataframe[['numero_ata', 'item']])
+                    # 4. Processa a ata para a empresa com TODOS os seus itens
+                    numero_ata = self.processar_empresa(registros_empresa, empresa, path_subpasta, numero_controle_atual)
+                    dataframe.loc[dataframe['empresa'] == empresa, 'numero_ata'] = numero_ata
+                    
+                    # 5. Incrementa o número de controle apenas uma vez por empresa
+                    numero_controle_atual += 1
+
+        print(dataframe[['numero_ata', 'item', 'empresa']])
 
     def processar_empresa(self, registros_empresa, empresa, path_subpasta, numero_controle): 
         if registros_empresa.empty:
