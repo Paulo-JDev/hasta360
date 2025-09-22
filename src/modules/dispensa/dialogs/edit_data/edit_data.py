@@ -1583,7 +1583,7 @@ class EditarDadosWindow(QMainWindow):
                 anexo_layout.addLayout(layout)
 
         # Adiciona seções de anexos
-        add_anexo_section("Documento de Formalização de Demanda (DFD)", "Anexo A - Relatório do Safin", "Anexo B - Especificações")
+        add_anexo_section("Documento de Formalização de Demanda (DFD)", "Anexo A - Relatório do Safin", "Anexo B - Especificações", "Anexo C - PDF DFD")
         add_anexo_section("Termo de Referência (TR)", "Anexo - Pesquisa de Preços")
         add_anexo_section("Declaração de Adequação Orçamentária", "Anexo - Relatório do PDM/CATSER")
         add_anexo_section("Demais Documentos", "Estudo Técnico Preliminar", "Matriz de Riscos")
@@ -1608,6 +1608,8 @@ class EditarDadosWindow(QMainWindow):
                 return self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'DFD' / 'Anexo A - Relatorio Safin'
             elif "Anexo B" in anexo:
                 return self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'DFD' / 'Anexo B - Especificações e Quantidade'
+            elif "Anexo C" in anexo:
+                return self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'DFD' / 'Anexo C - PDF DFD'
         elif section_title == "Termo de Referência (TR)":
             return self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'TR' / 'Pesquisa de Preços'
         elif section_title == "Declaração de Adequação Orçamentária":
@@ -1626,6 +1628,8 @@ class EditarDadosWindow(QMainWindow):
                 return "Abrir pasta Anexo A - Relatório do Safin"
             elif "Anexo B" in anexo:
                 return "Abrir pasta Anexo B - Especificações e Quantidade"
+            elif "Anexo C" in anexo:
+                return "Abrir pasta Anexo C - PDF DFD"
         elif section_title == "Termo de Referência (TR)":
             return "Abrir pasta Pesquisa de Preços"
         elif section_title == "Declaração de Adequação Orçamentária":
@@ -1719,6 +1723,8 @@ class EditarDadosWindow(QMainWindow):
                     pasta_anexo = self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'DFD' / 'Anexo A - Relatorio Safin'
                 elif "Anexo B" in anexo:
                     pasta_anexo = self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'DFD' / 'Anexo B - Especificações e Quantidade'
+                elif "Anexo C" in anexo:
+                    pasta_anexo = self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'DFD' / 'Anexo C - PDF DFD'
             elif section_title == "Termo de Referência (TR)":
                 pasta_anexo = self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'TR' / 'Pesquisa de Preços'
             elif section_title == "Declaração de Adequação Orçamentária":

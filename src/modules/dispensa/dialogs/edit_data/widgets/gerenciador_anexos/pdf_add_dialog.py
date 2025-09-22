@@ -326,7 +326,7 @@ class Worker(QThread):
         # Adicionei os que faltavam para garantir que ETP, MR, etc., sejam incluídos.
         documentos_a_processar = [
             {"template": "cp", "subfolder": "2. CP e anexos", "desc": "Comunicacao Padronizada"},
-            {"template": "dfd", "subfolder": "2. CP e anexos/DFD", "desc": "Documento de Formalizacao de Demanda", "cover": "dfd.pdf"},
+            {"subfolder": "2. CP e anexos/DFD/Anexo C - PDF DFD", "desc": "Documento de Formalizacao de Demanda", "cover": "dfd.pdf"},
             {"subfolder": "2. CP e anexos/DFD/Anexo A - Relatorio Safin", "cover": "anexo-a-dfd.pdf"},
             {"subfolder": "2. CP e anexos/DFD/Anexo B - Especificações e Quantidade", "cover": "anexo-b-dfd.pdf"},
             {"template": "tr", "subfolder": "2. CP e anexos/TR", "desc": "Termo de Referencia", "cover": "tr.pdf"},
@@ -379,7 +379,7 @@ class Worker(QThread):
                     for pdf_file in lista_de_anexos_pdf:
                         pdf_paths.append({"pdf_path": pdf_file})
                 else:
-                    print(f"Aviso: Nenhum PDF encontrado em: {doc['subfolder']}")
+                    print(f"Aviso(pdf_add_dialog): Nenhum PDF encontrado em: {doc['subfolder']}")
 
             # Atualiza o status para "concluído"
             if "template" in doc:

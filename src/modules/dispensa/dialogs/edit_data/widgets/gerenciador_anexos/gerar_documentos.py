@@ -152,6 +152,7 @@ class ConsolidarDocumentos(QObject):
             self.pasta_processo / '2. CP e anexos' / 'DFD',
             self.pasta_processo / '2. CP e anexos' / 'DFD' / 'Anexo A - Relatorio Safin',
             self.pasta_processo / '2. CP e anexos' / 'DFD' / 'Anexo B - Especificações e Quantidade',
+            self.pasta_processo / '2. CP e anexos' / 'DFD' / 'Anexo C - PDF DFD',  # <-- NOVA PASTA ADICIONADA AQUI
             self.pasta_processo / '2. CP e anexos' / 'TR',
             self.pasta_processo / '2. CP e anexos' / 'TR' / 'Pesquisa de Preços',
             self.pasta_processo / '2. CP e anexos' / 'Declaracao de Adequação Orçamentária',
@@ -270,7 +271,7 @@ class ConsolidarDocumentos(QObject):
         templates = [
             ("Template Autorização", TEMPLATE_DISPENSA_DIR / "template_autorizacao_dispensa.docx"),
             ("Template Comunicação Padronizada", TEMPLATE_DISPENSA_DIR / "template_cp.docx"),
-            ("Template DFD", TEMPLATE_DISPENSA_DIR / "template_dfd.docx"),
+            #("Template DFD", TEMPLATE_DISPENSA_DIR / "template_dfd.docx"),
             ("Template Termo de Referência", TEMPLATE_DISPENSA_DIR / "template_tr.docx"),
             ("Template Termo de Referência (Serviço)", TEMPLATE_DISPENSA_DIR / "template_tr_servico.docx"),
             ("Template Declaração de Adequação Orçamentária", TEMPLATE_DISPENSA_DIR / "template_dec_adeq.docx"),
@@ -653,10 +654,10 @@ class ConsolidarDocumentos(QObject):
         
         documentos = [
             {"template": "cp", "subfolder": "2. CP e anexos", "desc": "Comunicacao Padronizada"},
-            {"template": "dfd", "subfolder": "2. CP e anexos/DFD", "desc": "Documento de Formalizacao de Demanda", "cover": "dfd.pdf"},
+            {"subfolder": "2. CP e anexos/DFD/Anexo C - PDF DFD", "desc": "Documento de Formalizacao de Demanda", "cover": "dfd.pdf"},
             {"subfolder": "2. CP e anexos/DFD/Anexo A - Relatorio Safin", "cover": "anexo-a-dfd.pdf"},
             {"subfolder": "2. CP e anexos/DFD/Anexo B - Especificações e Quantidade", "cover": "anexo-b-dfd.pdf"},
-            {"template": termo_referencia_template, "subfolder": "2. CP e anexos/TR", "desc": "Termo de Referencia", "cover": "tr.pdf"},
+            {"template": "tr", "subfolder": "2. CP e anexos/TR", "desc": "Termo de Referencia", "cover": "tr.pdf"},
             {"subfolder": "2. CP e anexos/TR/Pesquisa de Preços", "cover": "anexo-tr.pdf"},
             {"template": "dec_adeq", "subfolder": "2. CP e anexos/Declaracao de Adequação Orçamentária", "desc": "Declaracao de Adequação Orçamentária", "cover": "dec_adeq.pdf"},
             {"subfolder": "2. CP e anexos/Declaracao de Adequação Orçamentária/Relatório do PDM-Catser", "cover": "anexo-dec-adeq.pdf"},
@@ -699,8 +700,8 @@ class ConsolidarDocumentos(QObject):
         latest_pdf = max(pdf_files, key=os.path.getmtime)
         return latest_pdf
 
-    def gerar_documento_de_formalizacao_de_demanda(self):
-        self.gerarDocumento("dfd", "2. CP e anexos/DFD", "Documento de Formalizacao de Demanda")
+    """def gerar_documento_de_formalizacao_de_demanda(self):
+        self.gerarDocumento("dfd", "2. CP e anexos/DFD", "Documento de Formalizacao de Demanda")"""
 
     def gerar_declaracao_orcamentaria(self):
         self.gerarDocumento("declaracao_orcamentaria", "2. CP e anexos/Declaracao de Adequação Orçamentária", "Declaracao Orcamentaria")
