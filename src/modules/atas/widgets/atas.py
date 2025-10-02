@@ -772,7 +772,14 @@ def inserir_relacao_itens(paragrafo, itens):
 
 def gerar_excel_relacao_itens(itens, caminho_arquivo_excel='relacao_itens.xlsx'):
     # Ordenar os itens, primeiro por 'grupo' (None será considerado menor) e depois por 'item'
-    itens_ordenados = sorted(itens, key=lambda x: (x['grupo'] if x['grupo'] is not None else '', x['item']))
+    try:
+        itens_ordenados = sorted(itens, key=lambda x: (
+            x['grupo'] if x['grupo'] is not None else '',
+            int(x['item'])  # Convertendo o item para inteiro antes de ordenar
+        ))
+    except (ValueError, TypeError):
+        # Fallback para o caso de algum item não ser um número válido
+        itens_ordenados = sorted(itens, key=lambda x: (x['grupo'] if x['grupo'] is not None else '', x['item']))
     
     # # Print do ordenamento
     # for item in itens_ordenados:
