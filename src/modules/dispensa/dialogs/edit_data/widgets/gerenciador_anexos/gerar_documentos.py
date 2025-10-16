@@ -40,15 +40,13 @@ class ConsolidarDocumentos(QObject):
         if isinstance(self.dados, pd.DataFrame) and not self.dados.empty:
             self.id_processo = self.dados['id_processo'].iloc[0]
             self.objeto = self.dados['objeto'].iloc[0]
+            self.numero = self.dados.get('numero', self.dados.get('id_processo', '')) # Adicionado
+            self.ano = self.dados.get('ano', self.dados.get('id_processo', '')) # Adicionado
         elif isinstance(self.dados, dict):
             self.id_processo = self.dados.get('id_processo', 'Desconhecido')
             self.objeto = self.dados.get('objeto', 'Desconhecido')
-        else:
-            # Define valores padrão se os dados forem inválidos para evitar erros
-            self.id_processo = "Processo_Invalido"
-            self.objeto = "Objeto_Invalido"
-            # Opcional: Levantar um erro se os dados são essenciais
-            # raise ValueError("O tipo de 'dados' não é suportado ou está vazio.")
+            self.numero = self.dados.get('numero', 'Desconhecido') # Adicionado
+            self.ano = self.dados.get('ano', 'Desconhecido') # Adicionado
 
         # 2. Define os caminhos como objetos Path desde o início
         self.diretorio_raiz = Path(self.config.get('pasta_base', str(Path.home() / 'Desktop')))
@@ -74,31 +72,38 @@ class ConsolidarDocumentos(QObject):
         # Chama a função para definir os nomes e caminhos pela primeira vez
         self.atualizar_nome_pasta()
 
+
     def atualizar_nome_pasta(self):
-        # Garante que os dados sejam do tipo correto para extração
+        def sanitize_filename(name):
+            """Remove caracteres ilegais para nomes de pasta/arquivo."""
+            # Remove caracteres ilegais do Windows
+            return re.sub(r'[\\/*?:"<>|]', "", name)
+
         if isinstance(self.dados, dict):
-            # --- INÍCIO DA CORREÇÃO ---
-            
-            # Pega o valor da chave 'id_processo'. Se for None, usa 'desconhecido' como padrão.
-            id_processo_bruto = self.dados.get('id_processo') or 'desconhecido'
-            
-            # Pega o valor da chave 'objeto'. Se for None, usa 'objeto_desconhecido' como padrão.
             objeto_bruto = self.dados.get('objeto') or 'objeto_desconhecido'
-            
-            # Converte para string para garantir que o .replace() sempre funcione
-            id_processo = str(id_processo_bruto).replace("/", "-")
-            objeto = str(objeto_bruto).replace("/", "-")
-
-            # --- FIM DA CORREÇÃO ---
-
+            # Usa os valores de numero e ano que salvamos
+            numero = str(self.dados.get('numero', 'N_A'))
+            ano = str(self.dados.get('ano', 'N_A'))
         else: # Assume DataFrame
-            id_processo = self.dados['id_processo'].iloc[0].replace("/", "-")
             objeto_bruto = self.dados['objeto'].iloc[0]
-            # Garante que o objeto não seja None antes de usar .replace()
-            objeto = str(objeto_bruto if pd.notna(objeto_bruto) else 'objeto_desconhecido').replace("/", "-")
+            numero = str(self.dados['numero'].iloc[0])
+            ano = str(self.dados['ano'].iloc[0])
 
-        # Define as variáveis de caminho de forma clara
-        self.nome_pasta = f"{id_processo} - {objeto}"
+        objeto_formatado = str(objeto_bruto if pd.notna(objeto_bruto) else 'objeto_desconhecido')
+        objeto_sanitizado = sanitize_filename(objeto_formatado)
+
+        # Cria o prefixo fixo
+        prefixo_pasta = f"DE-787010-{numero}-{ano}-"
+        
+        limite_objeto = 150 - len(prefixo_pasta)
+        
+        if len(objeto_sanitizado) > limite_objeto:
+            objeto_final = objeto_sanitizado[:limite_objeto].strip()
+        else:
+            objeto_final = objeto_sanitizado.strip()
+
+        # Define as variáveis de caminho com o NOVO FORMATO
+        self.nome_pasta = f"{prefixo_pasta}{objeto_final}"
         self.pasta_processo = self.diretorio_raiz / self.nome_pasta
 
     def validar_e_definir_pasta_base(self):

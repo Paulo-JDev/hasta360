@@ -206,7 +206,8 @@ class AddItemDialog(QDialog):
         if tipo_de_processo in tipo_map:
             abreviatura, nome_interno = tipo_map[tipo_de_processo]
             data['tipo'] = nome_interno
-            data['id_processo'] = f"{abreviatura} {data['numero']}/{data['ano']}"
+            # Altera a formatação do id_processo para incluir a UASG
+            data['id_processo'] = f"{abreviatura} 787010-{data['numero']}/{data['ano']}"
         else:
             data['tipo'] = "Tipo Desconhecido"
             data['id_processo'] = f"Desconhecido {data['numero']}/{data['ano']}"

@@ -35,7 +35,8 @@ VALID_SITUATIONS = [
     "Homologado",
     "Deserto",
     "Fracassado",
-    "Arquivado"
+    "Arquivado",
+    "Revogado"
 ]
 
 # Dicionário inverso

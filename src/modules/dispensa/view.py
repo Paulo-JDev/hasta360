@@ -199,7 +199,7 @@ class DispensaEletronicaWidget(QMainWindow):
         header.setSectionResizeMode(17, QHeaderView.ResizeMode.Fixed)
 
         header.resizeSection(0, 150)        
-        header.resizeSection(1, 130)
+        header.resizeSection(1, 180)
         header.resizeSection(5, 170)
         header.resizeSection(17, 100)
 
@@ -226,7 +226,8 @@ class CustomItemDelegate(QStyledItemDelegate):
                 'Homologado': 'deal',
                 'Deserto': 'magnifying-glass',                 # Novo
                 'Fracassado' : 'head_skull',          # Novo
-                'Arquivado': 'archive'
+                'Arquivado': 'archive',
+                'Revogado': 'cancel'
             }.get(situacao)
 
             # Desenha o ícone se encontrado no mapeamento

@@ -529,7 +529,7 @@ class EditarDadosWindow(QMainWindow):
             "Divisão de Obtenção",
             "Divisão de Pagamento",
             "Divisão de Administração",
-            "Divisão de Subsistência"
+            "Divisão de Abastecimento"
         ]
         self.setor_responsavel_combo .addItems(divisoes)
 
@@ -1358,10 +1358,14 @@ class EditarDadosWindow(QMainWindow):
 
     
     def criar_formulario(self):
-        # Inicia o worker para criação do formulário em segundo plano
-        self.worker = TableCreationWorker(self.dados, self.colunas_legiveis, self.pasta_base)
-        self.worker.file_saved.connect(self.abrir_arquivo)  # Conecta o sinal de conclusão
-        self.worker.start()  # Inicia a execução em segundo plano
+    # Garante que o nome da pasta do consolidador esteja com os dados mais recentes
+        self.consolidador.update_data(self.dados)
+        pasta_destino_processo = self.consolidador.pasta_processo
+
+        # Passa a pasta do processo (ex: "DE-787010-1-2025-Objeto") para o Worker
+        self.worker = TableCreationWorker(self.dados, self.colunas_legiveis, pasta_destino_processo)
+        self.worker.file_saved.connect(self.abrir_arquivo)
+        self.worker.start()
 
     def abrir_arquivo(self, file_path):
         """Abre o arquivo salvo com o caminho fornecido."""
@@ -1600,25 +1604,27 @@ class EditarDadosWindow(QMainWindow):
 
     def define_pasta_anexo(self, section_title, anexo):
         """Define o caminho da pasta de anexo baseado no título da seção e nome do anexo."""
-        id_processo_modificado = self.id_processo.replace("/", "-")
-        objeto_modificado = self.objeto.replace("/", "-")
+        numero = self.dados.get('numero', 'N_A')
+        ano = self.dados.get('ano', 'N_A')
+        objeto_modificado = str(self.dados.get('objeto', 'objeto_desconhecido')).replace("/", "-")
+        nome_pasta_processo = f"DE-787010-{numero}-{ano}-{objeto_modificado}"
 
         if section_title == "Documento de Formalização de Demanda (DFD)":
             if "Anexo A" in anexo:
-                return self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'DFD' / 'Anexo A - Relatorio Safin'
+                return self.pasta_base / nome_pasta_processo / '2. CP e anexos' / 'DFD' / 'Anexo A - Relatorio Safin'
             elif "Anexo B" in anexo:
-                return self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'DFD' / 'Anexo B - Especificações e Quantidade'
+                return self.pasta_base / nome_pasta_processo / '2. CP e anexos' / 'DFD' / 'Anexo B - Especificações e Quantidade'
             elif "Anexo C" in anexo:
-                return self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'DFD' / 'Anexo C - PDF DFD'
+                return self.pasta_base / nome_pasta_processo / '2. CP e anexos' / 'DFD' / 'Anexo C - PDF DFD'
         elif section_title == "Termo de Referência (TR)":
-            return self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'TR' / 'Pesquisa de Preços'
+            return self.pasta_base / nome_pasta_processo / '2. CP e anexos' / 'TR' / 'Pesquisa de Preços'
         elif section_title == "Declaração de Adequação Orçamentária":
-            return self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'Declaracao de Adequação Orçamentária' / 'Relatório do PDM-Catser'
+            return self.pasta_base / nome_pasta_processo / '2. CP e anexos' / 'Declaracao de Adequação Orçamentária' / 'Relatório do PDM-Catser'
         elif section_title == "Demais Documentos":
             if "Estudo" in anexo:
-                return self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'ETP'
+                return self.pasta_base / nome_pasta_processo / '2. CP e anexos' / 'ETP'
             elif "Matriz" in anexo:
-                return self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'MR'
+                return self.pasta_base / nome_pasta_processo / '2. CP e anexos' / 'MR'
         return None
 
     def define_tooltip_text(self, section_title, anexo):
