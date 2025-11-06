@@ -5,7 +5,9 @@ from pathlib import Path
 from PyQt6.QtWidgets import *
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
-from src.config.diretorios import *
+from paths.base_path import ICONS_DIR
+from paths.dispensa.dispensa_path import TEMPLATE_DISPENSA_DIR
+from src.config.diretorios import * # type: ignore
 import fitz
 from docxtpl import DocxTemplate
 import pandas as pd
@@ -211,9 +213,7 @@ class PDFAddDialog(QDialog):
         return header_widget
 
     def add_initial_items(self):
-        id_processo_modificado = self.id_processo.replace("/", "-")
-        objeto_modificado = self.objeto.replace("/", "-")
-        base_path = self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}'
+        base_path = self.pasta_base
 
         initial_items = {
             "DFD": [

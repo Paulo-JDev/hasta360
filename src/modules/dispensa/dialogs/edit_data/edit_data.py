@@ -1587,10 +1587,17 @@ class EditarDadosWindow(QMainWindow):
                 anexo_layout.addLayout(layout)
 
         # Adiciona seções de anexos
+        material_servico = self.dados.get('material_servico', 'Material')
+
+        # Adiciona seções de anexos
         add_anexo_section("Documento de Formalização de Demanda (DFD)", "Anexo A - Relatório do Safin", "Anexo B - Especificações", "Anexo C - PDF DFD")
         add_anexo_section("Termo de Referência (TR)", "Anexo - Pesquisa de Preços")
         add_anexo_section("Declaração de Adequação Orçamentária", "Anexo - Relatório do PDM/CATSER")
-        add_anexo_section("Demais Documentos", "Estudo Técnico Preliminar", "Matriz de Riscos")
+        
+        # Adiciona ETP e MR apenas se for Serviço
+        if material_servico == 'Serviço':
+            add_anexo_section("Demais Documentos", "Estudo Técnico Preliminar", "Matriz de Riscos")
+
         justificativa_label = QLabel("Justificativas relevantes")
         anexo_layout.addWidget(justificativa_label)
 

@@ -149,7 +149,18 @@ class ConsolidarDocumentos(QObject):
         return self.verificar_pastas(self.pasta_base, criar=False)
 
     def verificar_pastas(self, criar=False):
-        # USA self.pasta_processo para criar a estrutura DENTRO da pasta do processo
+        # --- INÍCIO DA MODIFICAÇÃO (FASE 2) ---
+        # Determina o tipo de processo (Material ou Serviço)
+        if isinstance(self.dados, pd.DataFrame) and not self.dados.empty:
+            material_servico = self.dados['material_servico'].iloc[0]
+        elif isinstance(self.dados, dict):
+            material_servico = self.dados.get('material_servico', 'Material') # Padrão para Material
+        else:
+            material_servico = 'Material' # Fallback
+        # --- FIM DA MODIFICAÇÃO ---
+
+        self.atualizar_nome_pasta()
+        
         pastas_necessarias = [
             self.pasta_processo / '1. Autorizacao',
             self.pasta_processo / '2. CP e anexos',
@@ -157,15 +168,24 @@ class ConsolidarDocumentos(QObject):
             self.pasta_processo / '2. CP e anexos' / 'DFD',
             self.pasta_processo / '2. CP e anexos' / 'DFD' / 'Anexo A - Relatorio Safin',
             self.pasta_processo / '2. CP e anexos' / 'DFD' / 'Anexo B - Especificações e Quantidade',
-            self.pasta_processo / '2. CP e anexos' / 'DFD' / 'Anexo C - PDF DFD',  # <-- NOVA PASTA ADICIONADA AQUI
+            self.pasta_processo / '2. CP e anexos' / 'DFD' / 'Anexo C - PDF DFD',
             self.pasta_processo / '2. CP e anexos' / 'TR',
             self.pasta_processo / '2. CP e anexos' / 'TR' / 'Pesquisa de Preços',
             self.pasta_processo / '2. CP e anexos' / 'Declaracao de Adequação Orçamentária',
             self.pasta_processo / '2. CP e anexos' / 'Declaracao de Adequação Orçamentária' / 'Relatório do PDM-Catser',
-            self.pasta_processo / '2. CP e anexos' / 'ETP',
-            self.pasta_processo / '2. CP e anexos' / 'MR',
             self.pasta_processo / '2. CP e anexos' / 'Justificativas Relevantes',
         ]
+
+        # --- INÍCIO DA MODIFICAÇÃO (FASE 2) ---
+        # Adiciona ETP e MR apenas se for Serviço
+        if material_servico == 'Serviço':
+            pastas_necessarias.extend([
+                self.pasta_processo / '2. CP e anexos' / 'ETP',
+                self.pasta_processo / '2. CP e anexos' / 'MR'
+            ])
+        # --- FIM DA MODIFICAÇÃO ---
+
+        pastas_existem = True
 
         # Criação das pastas, se necessário
         for pasta in pastas_necessarias:

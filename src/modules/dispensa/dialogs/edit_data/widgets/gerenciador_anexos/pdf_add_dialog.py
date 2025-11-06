@@ -218,9 +218,7 @@ class PDFAddDialog(QDialog):
         return header_widget
 
     def add_initial_items(self):
-        id_processo_modificado = self.id_processo.replace("/", "-")
-        objeto_modificado = self.objeto.replace("/", "-")
-        base_path = self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}'
+        base_path = self.pasta_base
 
         initial_items = {
             "DFD": [
@@ -234,6 +232,19 @@ class PDFAddDialog(QDialog):
                 ("Relatório do PDM-Catser", base_path / '2. CP e anexos' / 'Declaracao de Adequação Orçamentária' / 'Relatório do PDM-Catser')
             ]
         }
+
+        # Pega o tipo de processo a partir dos dados
+        if isinstance(self.dados, dict):
+            material_servico = self.dados.get('material_servico', 'Material')
+        else: # Fallback para o formato antigo de DataFrame
+            material_servico = self.dados['material_servico'].iloc[0]
+
+        # Adiciona ETP e MR apenas se for Serviço
+        if material_servico == 'Serviço':
+            initial_items["Demais Documentos"] = [
+                ("Estudo Técnico Preliminar", base_path / '2. CP e anexos' / 'ETP'),
+                ("Memorial de Cálculo/Relatório", base_path / '2. CP e anexos' / 'MR')
+            ]
 
         for parent_text, children in initial_items.items():
             parent_item = QTreeWidgetItem(self.data_view, [parent_text])
