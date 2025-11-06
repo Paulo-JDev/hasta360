@@ -1008,14 +1008,18 @@ class EditarDadosWindow(QMainWindow):
 
     def criar_e_abrir_pasta(self):
         # Verifica e cria a estrutura de pastas usando self.consolidador
-        pastas_existentes = self.consolidador.verificar_pastas(criar=True) 
+        pastas_existentes = self.consolidador.verificar_pastas(criar=True)
+        
         # Define o ícone conforme o status das pastas
         icon_key = "folder_v" if pastas_existentes else "folder_x"
         icon = self.icons.get(icon_key, None)
-        # Tenta abrir a pasta criada
-        self.abrir_pasta(self.pasta_base / self.nome_pasta)
+        
+        # USA O CAMINHO DO CONSOLIDADOR
+        self.abrir_pasta(self.consolidador.pasta_processo)
+        
         # Determina o texto do status
         status_text = "Pastas encontradas" if pastas_existentes else "Pastas não encontradas"
+        
         # Emite o sinal para atualizar o layout de status
         self.pastas_existentes.emit(status_text, icon)
 
@@ -1038,9 +1042,6 @@ class EditarDadosWindow(QMainWindow):
         # Verifique se pasta_base está corretamente inicializada
         if not hasattr(self, 'pasta_base') or not isinstance(self.pasta_base, Path):
             self.pasta_base = Path(self.config.get('pasta_base', str(Path.home() / 'Documentos')))  # Exemplo de inicialização
-
-        # Define um nome padrão para a pasta (ou modifique conforme necessário)
-        self.nome_pasta = f'{self.id_processo.replace("/", "-")} - {self.objeto.replace("/", "-")}'
 
         # Botão para criar a estrutura de pastas e abrir a pasta
         criar_pasta_button = self.create_button(
@@ -1604,27 +1605,25 @@ class EditarDadosWindow(QMainWindow):
 
     def define_pasta_anexo(self, section_title, anexo):
         """Define o caminho da pasta de anexo baseado no título da seção e nome do anexo."""
-        numero = self.dados.get('numero', 'N_A')
-        ano = self.dados.get('ano', 'N_A')
-        objeto_modificado = str(self.dados.get('objeto', 'objeto_desconhecido')).replace("/", "-")
-        nome_pasta_processo = f"DE-787010-{numero}-{ano}-{objeto_modificado}"
-
+        # USA O CAMINHO DO CONSOLIDADOR (que já tem a lógica correta)
+        pasta_processo = self.consolidador.pasta_processo
+        
         if section_title == "Documento de Formalização de Demanda (DFD)":
             if "Anexo A" in anexo:
-                return self.pasta_base / nome_pasta_processo / '2. CP e anexos' / 'DFD' / 'Anexo A - Relatorio Safin'
+                return pasta_processo / '2. CP e anexos' / 'DFD' / 'Anexo A - Relatorio Safin'
             elif "Anexo B" in anexo:
-                return self.pasta_base / nome_pasta_processo / '2. CP e anexos' / 'DFD' / 'Anexo B - Especificações e Quantidade'
+                return pasta_processo / '2. CP e anexos' / 'DFD' / 'Anexo B - Especificações e Quantidade'
             elif "Anexo C" in anexo:
-                return self.pasta_base / nome_pasta_processo / '2. CP e anexos' / 'DFD' / 'Anexo C - PDF DFD'
+                return pasta_processo / '2. CP e anexos' / 'DFD' / 'Anexo C - PDF DFD'
         elif section_title == "Termo de Referência (TR)":
-            return self.pasta_base / nome_pasta_processo / '2. CP e anexos' / 'TR' / 'Pesquisa de Preços'
+            return pasta_processo / '2. CP e anexos' / 'TR' / 'Pesquisa de Preços'
         elif section_title == "Declaração de Adequação Orçamentária":
-            return self.pasta_base / nome_pasta_processo / '2. CP e anexos' / 'Declaracao de Adequação Orçamentária' / 'Relatório do PDM-Catser'
+            return pasta_processo / '2. CP e anexos' / 'Declaracao de Adequação Orçamentária' / 'Relatório do PDM-Catser'
         elif section_title == "Demais Documentos":
             if "Estudo" in anexo:
-                return self.pasta_base / nome_pasta_processo / '2. CP e anexos' / 'ETP'
+                return pasta_processo / '2. CP e anexos' / 'ETP'
             elif "Matriz" in anexo:
-                return self.pasta_base / nome_pasta_processo / '2. CP e anexos' / 'MR'
+                return pasta_processo / '2. CP e anexos' / 'MR'
         return None
 
     def define_tooltip_text(self, section_title, anexo):
@@ -1707,10 +1706,18 @@ class EditarDadosWindow(QMainWindow):
     def add_pdf_to_merger(self):
         # Verifica as pastas necessárias
         pastas_necessarias = self.consolidador.verificar_pastas(criar=False)
-        # Abre o diálogo para adicionar PDF
-        pdf_add_dialog = PDFAddDialog(self.dados, self.icons, pastas_necessarias, self.consolidador.pasta_processo, self)
+        
+        # USA O CAMINHO DO CONSOLIDADOR
+        pdf_add_dialog = PDFAddDialog(
+            self.dados, 
+            self.icons, 
+            pastas_necessarias, 
+            self.consolidador.pasta_processo,  # <-- MUDANÇA AQUI
+            self
+        )
+        
         if pdf_add_dialog.exec():
-            cp_number = self.cp_edit.text()  # Pega o número de CP, se houver
+            cp_number = self.cp_edit.text()
             print(f"Adicionar PDF para CP nº {cp_number}" if cp_number else "Adicionar PDF")
         else:
             print("Ação de adicionar PDF cancelada.")
@@ -1718,28 +1725,10 @@ class EditarDadosWindow(QMainWindow):
     def atualizar_action(self):
         icon_confirm = QIcon(self.icons["checked"])
         icon_x = QIcon(self.icons["cancel"])
-
+    
         def atualizar_anexo(section_title, anexo, label):
-            pasta_anexo = None
-            id_processo_modificado = self.id_processo.replace("/", "-")
-            objeto_modificado = self.objeto.replace("/", "-")
-
-            if section_title == "Documento de Formalização de Demanda (DFD)":
-                if "Anexo A" in anexo:
-                    pasta_anexo = self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'DFD' / 'Anexo A - Relatorio Safin'
-                elif "Anexo B" in anexo:
-                    pasta_anexo = self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'DFD' / 'Anexo B - Especificações e Quantidade'
-                elif "Anexo C" in anexo:
-                    pasta_anexo = self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'DFD' / 'Anexo C - PDF DFD'
-            elif section_title == "Termo de Referência (TR)":
-                pasta_anexo = self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'TR' / 'Pesquisa de Preços'
-            elif section_title == "Declaração de Adequação Orçamentária":
-                pasta_anexo = self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'Declaracao de Adequação Orçamentária' / 'Relatório do PDM-Catser'
-            elif section_title == "Demais Documentos":
-                if "Estudo" in anexo:
-                    pasta_anexo = self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'ETP'
-                elif "Matriz" in anexo:
-                    pasta_anexo = self.pasta_base / f'{id_processo_modificado} - {objeto_modificado}' / '2. CP e anexos' / 'MR'
+            # USA O MÉTODO define_pasta_anexo (que agora está correto)
+            pasta_anexo = self.define_pasta_anexo(section_title, anexo)
             
             if pasta_anexo:
                 print(f"Verificando pasta: {pasta_anexo}")
@@ -1749,7 +1738,7 @@ class EditarDadosWindow(QMainWindow):
             else:
                 print(f"Anexo não identificado: {anexo}")
                 label.setPixmap(icon_x.pixmap(QSize(25, 25)))
-
+        
         for section_title, anexos in self.anexos_dict.items():
             for anexo, icon_label in anexos:
                 atualizar_anexo(section_title, anexo, icon_label)

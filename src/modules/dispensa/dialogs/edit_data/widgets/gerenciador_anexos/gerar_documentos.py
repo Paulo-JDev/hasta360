@@ -106,6 +106,19 @@ class ConsolidarDocumentos(QObject):
         self.nome_pasta = f"{prefixo_pasta}{objeto_final}"
         self.pasta_processo = self.diretorio_raiz / self.nome_pasta
 
+    def get_pasta_anexo(self, caminho_relativo):
+        """
+        Método auxiliar para retornar o caminho completo de uma subpasta.
+        Args:
+            caminho_relativo (str): Caminho relativo à pasta do processo
+                                Ex: '2. CP e anexos/DFD/Anexo A - Relatorio Safin'
+        Returns:
+            Path: Caminho completo da subpasta
+        Exemplo de uso:
+            pasta_dfd_anexo_a = self.consolidador.get_pasta_anexo('2. CP e anexos/DFD/Anexo A - Relatorio Safin')
+        """
+        return self.pasta_processo / caminho_relativo
+
     def validar_e_definir_pasta_base(self):
         """Verifica se o caminho base da configuração é válido. Se não, pede um novo."""
         caminho_salvo = self.config.get('pasta_base')
