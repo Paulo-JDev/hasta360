@@ -295,7 +295,7 @@ class Worker(QThread):
     update_status = pyqtSignal(str, str, int) 
     task_complete = pyqtSignal()
 
-    def __init__(self, documentos_encontrados, documentos, dados, icons, parent=None):
+    def __init__(self, documentos_encontrados, documentos, dados, icons, consolidador_instance, parent=None):
         super().__init__(parent)
         self.relacao_documentos_encontrados = documentos_encontrados  # Lista de documentos encontrados passada para o Worker
         self.documentos = documentos
@@ -306,6 +306,7 @@ class Worker(QThread):
         self.objeto = self.dados.get('objeto', '').replace('/', '-')
         self.icons = icons
         self.pdf_paths = []
+        self.consolidador = consolidador_instance
 
     def get_all_pdfs_in_directory(self, directory):
         # Verifica se a pasta existe and todos os arquivos .pdf
@@ -354,9 +355,10 @@ class Worker(QThread):
                     QThread.msleep(200)
 
             if "template" in doc:
-                docx_path = self.gerarDocumento(doc["template"], doc["subfolder"], doc["desc"])
+                # ✅ Usa a instância de ConsolidarDocumentos para gerar e salvar o DOCX e PDF
+                docx_path = self.consolidador.gerarDocumento(doc["template"], doc["subfolder"], doc["desc"])
                 if docx_path:
-                    pdf_path = self.salvarPDF(docx_path)
+                    pdf_path = self.consolidador.salvarPDF(docx_path) # <--- USE self.consolidador.salvarPDF
                     if pdf_path:
                         if "cover" in doc:
                             cover_path = TEMPLATE_DISPENSA_DIR / doc["cover"]
@@ -364,9 +366,10 @@ class Worker(QThread):
                                 pdf_paths.append({"pdf_path": cover_path})
                         pdf_paths.append({"pdf_path": pdf_path})
             else:
-                # USA O CAMINHO CORRETO COM self.nome_pasta
-                anexo_folder = self.pasta_base / self.nome_pasta / doc["subfolder"]
-                lista_de_anexos_pdf = self.get_all_pdfs_in_directory(anexo_folder)
+                # ✅ Usa a instância de ConsolidarDocumentos para obter o caminho da pasta e buscar PDFs
+                # A pasta_processo já está configurada corretamente dentro de self.consolidador
+                anexo_folder = self.consolidador.pasta_processo / doc["subfolder"] # <--- CORREÇÃO CRÍTICA AQUI
+                lista_de_anexos_pdf = self.consolidador.get_all_pdfs_in_directory(anexo_folder) # <--- USE self.consolidador.get_all_pdfs_in_directory
 
                 if lista_de_anexos_pdf:
                     if "cover" in doc:
@@ -382,7 +385,7 @@ class Worker(QThread):
             if "template" in doc:
                 self.update_status.emit(doc_desc, "concluído", 100)
 
-        self.concatenar_e_abrir_pdfs(pdf_paths)
+        self.consolidador.concatenar_e_abrir_pdfs(pdf_paths)
         self.task_complete.emit()
 
     def concatenar_e_abrir_pdfs(self, pdf_paths):
@@ -683,59 +686,52 @@ class Worker(QThread):
             context.update({f'{chave}_formatado': 'Não especificado\nNão especificado'})
 
 class ProgressDialog(QDialog):
-    def __init__(self, documentos_encontratos, documentos, icons, dados):
+    def __init__(self, documentos_encontratos, documentos, icons, dados, consolidador_instance): # <--- ADICIONE 'consolidador_instance' AQUI
         super().__init__()
         self.setWindowTitle("Progresso")
         self.setFixedSize(500, 300)
         self.layout = QVBoxLayout(self)
         self.dados = dados
+        self.consolidador = consolidador_instance # <--- ARMAZENE A INSTÂNCIA DE ConsolidarDocumentos
 
         # Inicializa os labels e ícones para cada documento
         self.labels = {}
-        self.icons = icons
+        self.icons = icons # Este 'icons' é o dicionário de QIcons, não o dicionário de icon_labels
 
-        self.icon_loading = QIcon(self.icons["loading_table"])  # Ícone para carregamento
-        self.icon_done = QIcon(self.icons["aproved"])  # Ícone para conclusão
+        self.icon_loading = QIcon(self.icons["loading_table"])
+        self.icon_done = QIcon(self.icons["aproved"])
 
         # Adiciona os labels e ícones para cada documento com 'template'
         for doc in documentos:
-            if "template" in doc:  # Somente para documentos que têm a chave 'template'
+            if "template" in doc:
                 doc_desc = doc.get('desc', doc.get('subfolder', 'Documento desconhecido'))
-
                 layout_h = QHBoxLayout()
-
-                # Cria o QLabel para o texto do documento e ajusta o estilo
                 label = QLabel(f"{doc_desc}")
-                label.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft)  # Alinha o texto verticalmente ao centro e à esquerda
-                label.setStyleSheet("font-size: 14px;")  # Define o tamanho da fonte para 14px
-
-                # Cria o QLabel para o ícone e alinha ao centro verticalmente
+                label.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft)
+                label.setStyleSheet("font-size: 14px;")
                 icon_label = QLabel()
-                icon_label.setPixmap(self.icon_loading.pixmap(24, 24))  # Tamanho do ícone: 24x24
-                icon_label.setAlignment(Qt.AlignmentFlag.AlignVCenter)  # Alinha o ícone verticalmente ao centro
-
+                icon_label.setPixmap(self.icon_loading.pixmap(24, 24))
+                icon_label.setAlignment(Qt.AlignmentFlag.AlignVCenter)
                 layout_h.addWidget(icon_label)
                 layout_h.addWidget(label)
-                layout_h.addStretch()  # Adiciona um espaçador para garantir que o texto e ícone fiquem à esquerda
+                layout_h.addStretch()
                 self.layout.addLayout(layout_h)
-
-                # Armazena os labels e ícones para atualizá-los mais tarde
                 self.labels[doc_desc] = label
-                self.icons[doc_desc] = icon_label
+                # ATENÇÃO: self.icons é o dicionário de QIcons. Use um nome diferente para os QLabels de ícones.
+                # Vamos usar self._icon_labels_map para evitar conflito.
+                if not hasattr(self, '_icon_labels_map'):
+                    self._icon_labels_map = {}
+                self._icon_labels_map[doc_desc] = icon_label
+
 
         # Layout para "Consolidar Documentos PDFs"
         layout_h_consolidar = QHBoxLayout()
-
-        # Cria o QLabel para o texto "Consolidar Documentos PDFs"
         self.label_consolidar = QLabel("Consolidação de Documentos.")
         self.label_consolidar.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft)
         self.label_consolidar.setStyleSheet("font-size: 14px;")
-
-        # Cria o QLabel para o ícone de carregamento
         self.icon_label_consolidar = QLabel()
-        self.icon_label_consolidar.setPixmap(self.icon_loading.pixmap(24, 24))  # Exibe o ícone de carregamento inicialmente
+        self.icon_label_consolidar.setPixmap(self.icon_loading.pixmap(24, 24))
         self.icon_label_consolidar.setAlignment(Qt.AlignmentFlag.AlignVCenter)
-
         layout_h_consolidar.addWidget(self.icon_label_consolidar)
         layout_h_consolidar.addWidget(self.label_consolidar)
         layout_h_consolidar.addStretch()
@@ -743,7 +739,7 @@ class ProgressDialog(QDialog):
 
         # Adiciona a barra de progresso indeterminada
         self.progress_bar = QProgressBar(self)
-        self.progress_bar.setRange(0, 0)  # Define a barra como indeterminada
+        self.progress_bar.setRange(0, 0)
         self.layout.addWidget(self.progress_bar)
 
         # Botão de fechar
@@ -752,10 +748,10 @@ class ProgressDialog(QDialog):
         self.close_button.clicked.connect(self.close)
         self.layout.addWidget(self.close_button)
 
-        # Passe o df_registro_selecionado para o Worker
-        self.worker = Worker(documentos_encontratos, documentos, self.dados, self.icons)
+        # Passe a instância de ConsolidarDocumentos para o Worker
+        self.worker = Worker(documentos_encontratos, documentos, self.dados, self.icons, self.consolidador) # <--- PASSE self.consolidador AQUI
         self.worker.update_status.connect(self.update_label)
-        self.worker.task_complete.connect(self.on_task_complete)  # Conectar ao novo método
+        self.worker.task_complete.connect(self.on_task_complete)
         self.worker.task_complete.connect(self.enable_close_button)
 
         self.worker.start()
@@ -772,7 +768,7 @@ class ProgressDialog(QDialog):
         
         # Atualiza o ícone após a conclusão do documento
         if progress == 100:
-            icon_label = self.icons.get(doc_desc)
+            icon_label = self._icon_labels_map.get(doc_desc)
             if icon_label:
                 icon_label.setPixmap(self.icon_done.pixmap(24, 24))  # Altera para o ícone de 'concluído'
 
@@ -790,5 +786,3 @@ class ProgressDialog(QDialog):
 
         # Oculta a barra de progresso quando o processo for concluído
         self.progress_bar.hide()
-
-

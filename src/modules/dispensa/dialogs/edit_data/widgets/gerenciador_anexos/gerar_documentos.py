@@ -705,7 +705,7 @@ class ConsolidarDocumentos(QObject):
         ]
         
         # Certifique-se de passar o df_registro_selecionado aqui
-        dialog = ProgressDialog(documentos_encontrados, documentos, self.icons, self.dados)
+        dialog = ProgressDialog(documentos_encontrados, documentos, self.icons, self.dados, self) # <--- ADICIONE 'self' AQUI
         dialog.exec()
            
     def concatenar_e_abrir_pdfs(self, pdf_paths):
@@ -713,7 +713,7 @@ class ConsolidarDocumentos(QObject):
             QMessageBox.warning(None, "Erro", "Nenhum PDF foi gerado para concatenar.")
             return
 
-        output_pdf_path = self.pasta_base / self.nome_pasta / "2. CP e anexos" / "CP_e_anexos.pdf"
+        output_pdf_path = self.pasta_processo / "2. CP e anexos" / "CP_e_anexos.pdf"
         merger = PdfMerger()
 
         try:
@@ -737,6 +737,31 @@ class ConsolidarDocumentos(QObject):
             return None
         latest_pdf = max(pdf_files, key=os.path.getmtime)
         return latest_pdf
+    def get_all_pdfs_in_directory(self, directory):
+        """
+        Retorna uma lista de todos os arquivos PDF em um diretório, ordenados por data de modificação.
+        """
+        if not directory.exists():
+            print(f"DEBUG: Diretório NÃO encontrado para buscar PDFs: {directory}") # Adicionado DEBUG
+            return []
+
+        # --- INÍCIO DA ADIÇÃO PARA DEPURAR ---
+        print(f"DEBUG: Verificando conteúdo do diretório: {directory}")
+        all_files_in_dir = list(directory.iterdir())
+        if not all_files_in_dir:
+            print(f"DEBUG: Diretório {directory} está VAZIO.")
+        else:
+            print(f"DEBUG: Arquivos encontrados em {directory}: {[f.name for f in all_files_in_dir]}")
+        # --- FIM DA ADIÇÃO PARA DEPURAR ---
+
+        pdf_files = sorted(list(directory.glob("*.pdf")), key=os.path.getmtime)
+
+        if not pdf_files:
+            print(f"DEBUG: NENHUM arquivo .pdf encontrado em {directory} usando glob('*.pdf').")
+        else:
+            print(f"DEBUG: PDFs encontrados em {directory}: {[f.name for f in pdf_files]}")
+
+        return pdf_files
 
     """def gerar_documento_de_formalizacao_de_demanda(self):
         self.gerarDocumento("dfd", "2. CP e anexos/DFD", "Documento de Formalizacao de Demanda")"""
