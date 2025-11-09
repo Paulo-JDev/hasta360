@@ -219,7 +219,7 @@ class PDFAddDialog(QDialog):
 
     def add_initial_items(self):
         base_path = self.pasta_base
-
+    
         initial_items = {
             "DFD": [
                 ("Anexo A - Relatório Safin", base_path / '2. CP e anexos' / 'DFD' / 'Anexo A - Relatorio Safin'),
@@ -232,20 +232,7 @@ class PDFAddDialog(QDialog):
                 ("Relatório do PDM-Catser", base_path / '2. CP e anexos' / 'Declaracao de Adequação Orçamentária' / 'Relatório do PDM-Catser')
             ]
         }
-
-        # Pega o tipo de processo a partir dos dados
-        if isinstance(self.dados, dict):
-            material_servico = self.dados.get('material_servico', 'Material')
-        else: # Fallback para o formato antigo de DataFrame
-            material_servico = self.dados['material_servico'].iloc[0]
-
-        # Adiciona ETP e MR apenas se for Serviço
-        if material_servico == 'Serviço':
-            initial_items["Demais Documentos"] = [
-                ("Estudo Técnico Preliminar", base_path / '2. CP e anexos' / 'ETP'),
-                ("Memorial de Cálculo/Relatório", base_path / '2. CP e anexos' / 'MR')
-            ]
-
+        
         for parent_text, children in initial_items.items():
             parent_item = QTreeWidgetItem(self.data_view, [parent_text])
             parent_item.setFont(0, QFont('SansSerif', 14))
@@ -259,7 +246,7 @@ class PDFAddDialog(QDialog):
                 if pdf_file:
                     print(f"PDF encontrado: {pdf_file}")
                     child_item.setIcon(0, self.icon_existe)
-                    child_item.setData(0, Qt.ItemDataRole.UserRole, str(pdf_file))  # Armazena o caminho do PDF
+                    child_item.setData(0, Qt.ItemDataRole.UserRole, str(pdf_file))
                 else:
                     print("Nenhum PDF encontrado")
                     child_item.setIcon(0, self.icon_nao_existe)
@@ -331,10 +318,16 @@ class Worker(QThread):
         """
         Lógica principal para gerar, encontrar e preparar os PDFs para a mesclagem.
         """
-        pdf_paths = [] # Lista final de PDFs a serem mesclados
-
-        # Lista completa de documentos a serem processados.
-        # Adicionei os que faltavam para garantir que ETP, MR, etc., sejam incluídos.
+        pdf_paths = []
+        
+        # Obtém o número e ano dos dados
+        numero = self.dados.get('numero', 'N_A')
+        ano = self.dados.get('ano', 'N_A')
+        objeto_modificado = str(self.dados.get('objeto', 'objeto_desconhecido')).replace("/", "-")
+        
+        # CONSTRÓI O NOME DA PASTA COM A NOVA LÓGICA
+        self.nome_pasta = f"DE-787010-{numero}-{ano}-{objeto_modificado}"
+        
         documentos_a_processar = [
             {"template": "cp", "subfolder": "2. CP e anexos", "desc": "Comunicacao Padronizada"},
             {"subfolder": "2. CP e anexos/DFD/Anexo C - PDF DFD", "desc": "Documento de Formalizacao de Demanda", "cover": "dfd.pdf"},
@@ -349,54 +342,46 @@ class Worker(QThread):
             {"template": "justificativas", "subfolder": "2. CP e anexos/Justificativas Relevantes", "desc": "Justificativas Relevantes", "cover": "justificativas.pdf"},
         ]
 
-        # O atributo `self.documentos` que vem da classe `GerarDocumentos` pode ter uma lista customizada,
-        # então vamos usar ela se existir, senão usamos a lista completa.
         lista_final_docs = self.documentos if self.documentos else documentos_a_processar
-        
+
         for doc in lista_final_docs:
             doc_desc = doc.get('desc', os.path.basename(doc.get('subfolder')))
 
-            # Emite sinal para a UI mostrar que está trabalhando neste documento
             if "template" in doc:
                 for i in range(4):
                     status = "sendo gerado" + "." * (i % 4)
                     self.update_status.emit(doc_desc, status, 50)
-                    QThread.msleep(200) # Pequena pausa para efeito visual
+                    QThread.msleep(200)
 
             if "template" in doc:
                 docx_path = self.gerarDocumento(doc["template"], doc["subfolder"], doc["desc"])
                 if docx_path:
                     pdf_path = self.salvarPDF(docx_path)
                     if pdf_path:
-                        # LÓGICA CORRIGIDA: Adiciona capa e documento como itens separados na lista
                         if "cover" in doc:
                             cover_path = TEMPLATE_DISPENSA_DIR / doc["cover"]
                             if cover_path.exists():
                                 pdf_paths.append({"pdf_path": cover_path})
                         pdf_paths.append({"pdf_path": pdf_path})
             else:
-                # LÓGICA CORRIGIDA: Usa a nova função para pegar TODOS os PDFs da pasta
+                # USA O CAMINHO CORRETO COM self.nome_pasta
                 anexo_folder = self.pasta_base / self.nome_pasta / doc["subfolder"]
                 lista_de_anexos_pdf = self.get_all_pdfs_in_directory(anexo_folder)
 
                 if lista_de_anexos_pdf:
-                    # Adiciona a capa da seção primeiro, se existir
                     if "cover" in doc:
                         cover_path = TEMPLATE_DISPENSA_DIR / doc["cover"]
                         if cover_path.exists():
                             pdf_paths.append({"pdf_path": cover_path})
-                    
-                    # Adiciona CADA PDF encontrado na pasta
+
                     for pdf_file in lista_de_anexos_pdf:
                         pdf_paths.append({"pdf_path": pdf_file})
                 else:
                     print(f"Aviso(pdf_add_dialog): Nenhum PDF encontrado em: {doc['subfolder']}")
 
-            # Atualiza o status para "concluído"
             if "template" in doc:
                 self.update_status.emit(doc_desc, "concluído", 100)
 
-        # Após o loop, chama a função de merge
         self.concatenar_e_abrir_pdfs(pdf_paths)
         self.task_complete.emit()
 
@@ -591,16 +576,22 @@ class Worker(QThread):
         Configura os caminhos para os templates e os documentos gerados.
         """
         template_path = TEMPLATE_DISPENSA_DIR / template_filename
-        self.nome_pasta = f"{self.id_processo} - {self.objeto}"
+        
+        # CONSTRÓI O NOME DA PASTA COM A NOVA LÓGICA
+        numero = self.dados.get('numero', 'N_A')
+        ano = self.dados.get('ano', 'N_A')
+        objeto_modificado = str(self.dados.get('objeto', 'objeto_desconhecido')).replace("/", "-")
+        self.nome_pasta = f"DE-787010-{numero}-{ano}-{objeto_modificado}"
 
-        # Verifica ou altera o diretório base
         if 'pasta_base' not in self.config:
             self.alterar_diretorio_base()
 
-        # Define o caminho para salvar o arquivo gerado
         pasta_base = Path(self.config['pasta_base']) / self.nome_pasta / subfolder_name
         pasta_base.mkdir(parents=True, exist_ok=True)
-        save_path = pasta_base / f"{self.id_processo} - {file_description}.docx"
+        
+        # USA O ID_PROCESSO FORMATADO CORRETAMENTE
+        id_processo_formatado = f"DE 787010-{numero}-{ano}"
+        save_path = pasta_base / f"{id_processo_formatado} - {file_description}.docx"
 
         return template_path, save_path
 
