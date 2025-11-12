@@ -150,5 +150,7 @@ def load_icons():
         "montagem": load_icon("montagem.png"),
         "calendario": load_icon("calendario.png"),
         "calendario-cor": load_icon("calendario-cor.png"),
+        "data-processing": load_icon("data-processing.png"),
+        "data-server_azul": load_icon("data-server_azul.png"),
 
                 }

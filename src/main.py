@@ -11,7 +11,7 @@ from modules.settings.settings_widget import SettingsWidget
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        print("Projeto Hasta360 - Versão 2.9.4 - 2025")
+        print("Projeto Hasta360 - Versão 3.0.0 - 2025")
         self.icons = load_icons()
         self.buttons = {}
         self.active_button = None
@@ -76,7 +76,8 @@ class MainWindow(QMainWindow):
             #("contrato_blue", "contrato", "Contratos", self.show_contratos),
             #("contrato_blue", "contrato", "Planejamento", self.show_planejamento),
             ("statistics_azul", "statistics", "Indicadores", self.show_indicadores),                        
-            ("config", "config_hover", "Configurações", self.show_settings_page),
+            ("config", "config_hover", "Configurações", self.show_config),
+            ("data-server_azul", "data-processing", "Database", self.show_settings_page)
         ]
 
         # Criando os botões e adicionando-os ao layout do menu
@@ -327,7 +328,7 @@ class MainWindow(QMainWindow):
         self.content_layout.addWidget(self.contratos_view)
         self.set_active_button(self.buttons["contrato_blue"])
         
-    '''def show_config(self):
+    def show_config(self):
         """Exibe o gerenciador de configurações."""
         self.clear_content_area()
 
@@ -338,7 +339,7 @@ class MainWindow(QMainWindow):
         self.content_layout.addWidget(self.config_manager)
 
         # Define o botão correspondente como ativo
-        self.set_active_button(self.buttons["config"])'''
+        self.set_active_button(self.buttons["config"])
 
     def show_inicio(self):
         self.clear_content_area()
