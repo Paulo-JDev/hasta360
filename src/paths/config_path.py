@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import *
+from PyQt6.QtWidgets import *                                  
 from PyQt6.QtCore import *
 from .base_path import JSON_DIR, DATABASE_DIR, CONFIG_FILE
 from pathlib import Path

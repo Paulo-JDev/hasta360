@@ -6,11 +6,12 @@ from modules.utils.icon_loader import load_icons
 from assets.styles.styles import get_menu_button_style, get_menu_button_activated_style, get_full_dark_theme
 from modules.widgets import *
 from modules.config.config_widget import ConfigManager
+from modules.settings.settings_widget import SettingsWidget
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        print("Projeto Hasta360 - Versão 2.8.4 - 2025")
+        print("Projeto Hasta360 - Versão 2.9.4 - 2025")
         self.icons = load_icons()
         self.buttons = {}
         self.active_button = None
@@ -18,6 +19,8 @@ class MainWindow(QMainWindow):
         self.setup_ui()
         self.open_initial_page()
 
+        # --- 2. Crie uma instância do novo widget ---
+        self.settings_page = SettingsWidget(self)
     # ====== SETUP DA INTERFACE ======
 
     def setup_ui(self):
@@ -73,7 +76,7 @@ class MainWindow(QMainWindow):
             #("contrato_blue", "contrato", "Contratos", self.show_contratos),
             #("contrato_blue", "contrato", "Planejamento", self.show_planejamento),
             ("statistics_azul", "statistics", "Indicadores", self.show_indicadores),                        
-            ("config", "config_hover", "Configurações", self.show_config),
+            ("config", "config_hover", "Configurações", self.show_settings_page),
         ]
 
         # Criando os botões e adicionando-os ao layout do menu
@@ -99,6 +102,13 @@ class MainWindow(QMainWindow):
         self.menu_widget.setLayout(self.menu_layout)
         self.menu_widget.setStyleSheet("background-color: #13141F;")
         self.central_layout.addWidget(self.menu_widget)
+
+    def show_settings_page(self):
+        """Exibe o novo widget de configurações."""
+        self.clear_content_area() 
+        self.content_layout.addWidget(self.settings_page)
+        # Define o botão "config" como ativo
+        self.set_active_button(self.buttons["config"])
         
     def show_tooltip_with_arrow(self, text, button):
         self.tooltip_label.setText(text)
@@ -317,7 +327,7 @@ class MainWindow(QMainWindow):
         self.content_layout.addWidget(self.contratos_view)
         self.set_active_button(self.buttons["contrato_blue"])
         
-    def show_config(self):
+    '''def show_config(self):
         """Exibe o gerenciador de configurações."""
         self.clear_content_area()
 
@@ -328,7 +338,7 @@ class MainWindow(QMainWindow):
         self.content_layout.addWidget(self.config_manager)
 
         # Define o botão correspondente como ativo
-        self.set_active_button(self.buttons["config"])
+        self.set_active_button(self.buttons["config"])'''
 
     def show_inicio(self):
         self.clear_content_area()
