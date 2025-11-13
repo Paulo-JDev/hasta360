@@ -16,3 +16,6 @@ src/database/json/config.json
 src/database/pdf/
 relatorios/
 build/
+main.spec
+dist/
+
