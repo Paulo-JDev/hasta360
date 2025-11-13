@@ -109,7 +109,7 @@ class MainWindow(QMainWindow):
         self.clear_content_area() 
         self.content_layout.addWidget(self.settings_page)
         # Define o botão "config" como ativo
-        self.set_active_button(self.buttons["config"])
+        self.set_active_button(self.buttons["data-server_azul"])
         
     def show_tooltip_with_arrow(self, text, button):
         self.tooltip_label.setText(text)
