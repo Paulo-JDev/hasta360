@@ -1,3 +1,5 @@
+# src/modules/dispensa/controller.py
+
 from modules.dispensa.dialogs.add_item import AddItemDialog
 from modules.dispensa.dialogs.salvar_tabela import DataManager
 from modules.dispensa.dialogs.gerar_tabela import TabelaResumidaManager
@@ -13,8 +15,10 @@ import os
 from modules.dispensa.dados_api.api_consulta import ConsultaAPIDialog
 import webbrowser
 from urllib.parse import quote
-from modules.utils.automacao_email import executar_automacao_email
-from modules.utils.automacao_coordenadas import executar_automacao_email_coords
+#from modules.utils.automacao_coordenadas import executar_automacao_email_coords
+
+from paths.config_path import load_config
+from modules.utils.automacao_email import enviar_email_gmail_com_cc
 
 class DispensaEletronicaController(QObject): 
     def __init__(self, icons, view, model):
@@ -238,6 +242,41 @@ class DispensaEletronicaController(QObject):
             # O aviso de "ação não permitida" é agora responsabilidade da View.
             # O controller apenas não faz nada se a situação não for uma das esperadas.
             print(f"Nenhuma ação de e-mail configurada para a situação: {situacao}")
+
+    def _enviar_email_com_smtp(self, recipient_email, subject, body):
+        """
+        Carrega as configurações salvas e chama o motor de e-mail.
+        """
+        # 1. Carregar Configurações Salvas
+        sender_email = load_config("GMAIL_USER", "")
+        sender_password = load_config("GMAIL_APP_PASS", "")
+        cc_email_1 = load_config("CC_EMAIL_1", "")
+        cc_email_2 = load_config("CC_EMAIL_2", "")
+        
+        cc_emails = [email for email in [cc_email_1, cc_email_2] if email] # Cria lista de CC
+
+        # 2. Validar Configurações
+        if not sender_email or not sender_password:
+            QMessageBox.warning(
+                self.view,
+                "Configuração Incompleta",
+                "E-mail do remetente ou Senha de App não configurados.\n\n"
+                "Por favor, acesse a tela de Configurações (ícone de engrenagem) "
+                "e preencha os campos em 'Configurações de E-mail (Gmail)'."
+            )
+            return
+
+        # 3. Chamar o motor de envio
+        # (A função enviar_email_gmail_com_cc já mostrará 
+        # pop-ups de sucesso ou falha)
+        enviar_email_gmail_com_cc(
+            sender_email=sender_email,
+            sender_password=sender_password,
+            recipient_email=recipient_email,
+            cc_emails=cc_emails,
+            subject=subject,
+            body=body
+        )
     
     def handle_save_data(self, data):
         try:
@@ -249,7 +288,7 @@ class DispensaEletronicaController(QObject):
 
     def _preparar_email_sessao_publica(self, data):
         """
-        Lê o template da mensagem de Sessão Pública e abre o cliente de e-mail.
+        Prepara a mensagem de Sessão Pública e envia usando o motor SMTP.
         """
         destinatario_email = data.get("email", "")
         if not destinatario_email:
@@ -262,15 +301,12 @@ class DispensaEletronicaController(QObject):
                 mensagem_base = f.read()
 
             data_sessao_str = data.get("data_sessao", "")
-            data_formatada = "[N/A]" # Valor padrão caso a data não seja válida
+            data_formatada = "[N/A]" # Valor padrão
             if data_sessao_str:
                 try:
-                    # Converte a string de data para um objeto datetime
                     data_obj = datetime.strptime(data_sessao_str, '%Y-%m-%d')
-                    # Formata o objeto datetime para o padrão DD/MM/YYYY
                     data_formatada = data_obj.strftime('%d/%m/%Y')
                 except ValueError:
-                    # Se o formato da data for inesperado, mantém o valor padrão
                     print(f"Aviso: Formato de data inválido para '{data_sessao_str}'.")
 
             mensagem_final = mensagem_base.replace("{{numero-da-cp}}", str(data.get("cp", "[N/A]")))
@@ -279,41 +315,31 @@ class DispensaEletronicaController(QObject):
             mensagem_final = mensagem_final.replace("{{email_responsavel}}", str(data.get("email", "[E-mail não informado]")))
             mensagem_final = mensagem_final.replace("{{sessao_publica}}", str(data_formatada))
             
+            # (Adicione aqui quaisquer outras substituições que você criou)
+
             assunto = f"Início da Sessão Pública - Dispensa Eletrônica: {data.get('id_processo')}"
 
-            # 1. Abre o site do webmail em uma nova aba
-            webbrowser.open_new_tab("https://webmail.marinha.mil.br/")
+            # --- INÍCIO DA MODIFICAÇÃO ---
+            # Removemos a abertura do navegador, cópia para clipboard, 
+            # e a automação por coordenadas.
             
-            # 2. Copia o corpo da mensagem para a área de transferência
-            clipboard = QApplication.clipboard()
-            clipboard.setText(mensagem_final)
-            
-            # 3. Exibe uma notificação para o usuário
-            QMessageBox.information(self.view, "Ação Necessária",
-                                    f"O webmail foi aberto.\n\n"
-                                    f"A mensagem para '{destinatario_email}' foi copiada para a sua área de transferência.\n\n"
-                                    f"Por favor, crie um novo e-mail, cole o destinatário e a mensagem.")
-
-            # --- CÓDIGO REFINADO AQUI ---
-            # A variável 'corpo' recebe diretamente 'mensagem_final' sem replaces redundantes.
-            corpo = mensagem_final
-
-            executar_automacao_email_coords(destinatario_email, assunto, corpo)
+            # Em vez disso, chamamos o novo motor SMTP:
+            self._enviar_email_com_smtp(destinatario_email, assunto, mensagem_final)
+            # --- FIM DA MODIFICAÇÃO ---
 
         except FileNotFoundError:
             QMessageBox.critical(self.view, "Erro de Template", "O arquivo 'mensagem_sessaopublica.txt' não foi encontrado.")
         except Exception as e:
-            QMessageBox.critical(self.view, "Erro", f"Ocorreu um erro ao preparar a mensagem: {e}")   
+            QMessageBox.critical(self.view, "Erro", f"Ocorreu um erro ao preparar a mensagem: {e}")
     
     def _preparar_email_homologado(self, data):
         """
-        Abre o webmail, copia a mensagem para a área de transferência
-        e notifica o usuário.
+        Prepara a mensagem de homologado e envia usando o motor SMTP.
         """
         destinatario_email = data.get("email", "")
         if not destinatario_email:
             QMessageBox.warning(self.view, "E-mail não encontrado",
-                                "O campo 'E-mail' do responsável não está preenchido.")
+                                  "O campo 'E-mail' do responsável não está preenchido.")
             return
 
         try:
@@ -327,28 +353,18 @@ class DispensaEletronicaController(QObject):
             mensagem_final = mensagem_final.replace("{{numero da dispensa}}", str(data.get("id_processo", "[N/A]")))
             mensagem_final = mensagem_final.replace("{{email_responsavel}}", str(data.get("email", "[E-mail não informado]")))
             
+            # (Adicione aqui quaisquer outras substituições que você criou 
+            #  para as "coisas novas" que você mencionou)
+            
             assunto = f"Homologação da Dispensa Eletrônica: {data.get('id_processo')}"
 
-            # 1. Abre o site do webmail em uma nova aba
-            webbrowser.open_new_tab("https://webmail.marinha.mil.br/")
+            # --- INÍCIO DA MODIFICAÇÃO ---
+            # Removemos a abertura do navegador, cópia para clipboard, 
+            # e a automação por coordenadas.
             
-            # 2. Copia o corpo da mensagem para a área de transferência
-            clipboard = QApplication.clipboard()
-            clipboard.setText(mensagem_final)
-            
-            # 3. Exibe uma notificação para o usuário
-            QMessageBox.information(self.view, "Ação Necessária",
-                                    f"O webmail foi aberto.\n\n"
-                                    f"A mensagem para '{destinatario_email}' foi copiada para a sua área de transferência.\n\n"
-                                    f"Por favor, crie um novo e-mail, cole o destinatário e a mensagem.")
-
-            # --- CORREÇÃO APLICADA AQUI ---
-            # A variável 'corpo' agora recebe o valor de 'mensagem_final'
-            corpo = mensagem_final
-            # O assunto já foi definido, não precisa repetir.
-
-            # Chama a nova função de automação baseada em coordenadas
-            executar_automacao_email_coords(destinatario_email, assunto, corpo)
+            # Em vez disso, chamamos o novo motor SMTP:
+            self._enviar_email_com_smtp(destinatario_email, assunto, mensagem_final)
+            # --- FIM DA MODIFICAÇÃO ---
 
         except Exception as e:
             QMessageBox.critical(self.view, "Erro", f"Ocorreu um erro ao preparar a mensagem: {e}")

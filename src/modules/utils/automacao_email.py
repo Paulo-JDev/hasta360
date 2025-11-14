@@ -1,92 +1,68 @@
-import pyautogui
-import pyperclip
-import time
-from pathlib import Path
+import smtplib
+import ssl
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from PyQt6.QtWidgets import QMessageBox
 
-# Define o caminho para a pasta onde as imagens da automação estão salvas
-IMAGE_DIR = Path(__file__).parent.parent.parent / "assets" / "automation_images"
-
-def find_and_click(image_name, description, confidence=0.9, timeout=10):
+def enviar_email_gmail_com_cc(sender_email, sender_password, recipient_email, cc_emails, subject, body):
     """
-    Procura por uma imagem na tela e clica nela.
-    Retorna True se for bem-sucedido, False caso contrário.
+    Envia um e-mail usando o SMTP do Gmail com Senha de App e suporte a CC.
+
+    :param sender_email: O e-mail do remetente (ex: "ceimbratech@gmail.com")
+    :param sender_password: A "Senha de App" de 16 dígitos gerada pelo Google
+    :param recipient_email: O e-mail do destinatário principal
+    :param cc_emails: Uma lista de e-mails para enviar em cópia (CC)
+    :param subject: O assunto do e-mail
+    :param body: O corpo do e-mail (texto plano)
     """
-    print(f"Procurando por: {description} ('{image_name}')...")
-    start_time = time.time()
-    while time.time() - start_time < timeout:
-        try:
-            # Tenta encontrar a imagem na tela
-            location = pyautogui.locateOnScreen(str(IMAGE_DIR / image_name), confidence=confidence)
-            if location:
-                pyautogui.click(pyautogui.center(location))
-                print(f"Sucesso: Clicou em '{description}'.")
-                time.sleep(1) # Pequena pausa para a UI reagir
-                return True
-        except pyautogui.ImageNotFoundException:
-            time.sleep(0.5) # Espera um pouco antes de tentar novamente
-    
-    print(f"ERRO: Não foi possível encontrar '{description}' na tela após {timeout} segundos.")
-    QMessageBox.critical(None, "Erro na Automação", f"Não foi possível encontrar o elemento '{description}' na tela.")
-    return False
+    try:
+        # Cria a mensagem
+        message = MIMEMultipart()
+        message["From"] = sender_email
+        message["To"] = recipient_email
+        message["Subject"] = subject
+        
+        # Adiciona os e-mails em CC
+        if cc_emails:
+            # Filtra e-mails vazios da lista, se houver
+            valid_cc_emails = [email.strip() for email in cc_emails if email and email.strip()]
+            if valid_cc_emails:
+                message["Cc"] = ", ".join(valid_cc_emails)
+        
+        # Adiciona o corpo do e-mail
+        message.attach(MIMEText(body, "plain"))
 
-def paste_text(text):
-    """Copia um texto para a área de transferência e o cola."""
-    pyperclip.copy(text)
-    pyautogui.hotkey('ctrl', 'v')
-    print(f"Colou o texto: '{text[:30]}...'")
-    time.sleep(0.5)
+        # Configura a conexão com o servidor SMTP do Gmail
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+            server.login(sender_email, sender_password)
+            
+            # Prepara a lista final de destinatários (Para + CC)
+            all_recipients = [recipient_email] + (valid_cc_emails if 'valid_cc_emails' in locals() else [])
+            
+            # Envia o e-mail
+            server.sendmail(
+                sender_email, all_recipients, message.as_string()
+            )
+            
+        print(f"E-mail enviado com sucesso para {recipient_email} (CC: {cc_emails})")
+        QMessageBox.information(
+            None, 
+            "E-mail Enviado", 
+            f"O e-mail foi enviado com sucesso para:\n{recipient_email}"
+        )
 
-# --- FUNÇÃO PRINCIPAL DA AUTOMAÇÃO ---
-def executar_automacao_email(destinatario, assunto, corpo_mensagem):
-    """
-    Executa uma sequência de passos de automação para enviar um e-mail.
-    """
-    print("\n--- INICIANDO AUTOMAÇÃO DE E-MAIL ---")
-    
-    # =============================================================================
-    #           COMO ADICIONAR NOVOS PASSOS (SEU GUIA)
-    # =============================================================================
-    # Para adicionar um novo passo, basta adicionar uma nova verificação 'if not ...'
-    # usando as funções 'find_and_click' ou 'paste_text'.
-    #
-    # Exemplo: Se você precisar clicar em um campo de "Assunto" antes de colar,
-    # você adicionaria a seguinte linha:
-    #
-    # if not find_and_click('campo_assunto.png', 'Campo de Assunto'):
-    #     return # Para a automação se o passo falhar
-    #
-    # E então o passo para colar o assunto:
-    # paste_text(assunto)
-    #
-    # =============================================================================
-
-    # --- PASSO 1: Clicar no botão para criar uma nova mensagem ---
-    # (Você precisa tirar um print do botão "Nova Mensagem" e salvar como 'nova_mensagem.png')
-    if not find_and_click('nova_mensagem.png', "Botão 'Nova Mensagem'"):
-        return # Para a automação se o passo falhar
-
-    # --- PASSO 2: Colar o destinatário ---
-    # (Não precisa de imagem, apenas cola no campo que estiver focado)
-    paste_text(destinatario)
-    pyautogui.press('tab') # Pressiona Tab para pular para o próximo campo (geralmente Assunto)
-    time.sleep(0.5)
-
-    # --- PASSO 3: Colar o assunto ---
-    paste_text(assunto)
-    pyautogui.press('tab') # Pressiona Tab para pular para o corpo do e-mail
-    time.sleep(0.5)
-
-    # --- PASSO 4: Colar o corpo da mensagem ---
-    paste_text(corpo_mensagem)
-    
-    # --- PASSO 5 (Opcional): Clicar em Enviar ---
-    # (Descomente as linhas abaixo quando estiver pronto para enviar de verdade)
-    # print("Procurando pelo botão Enviar...")
-    # if not find_and_click('botao_enviar.png', "Botão 'Enviar'"):
-    #     return
-
-    print("--- AUTOMAÇÃO FINALIZADA (Modo de Teste) ---")
-    QMessageBox.information(None, "Automação Concluída", 
-                            "O processo de automação foi finalizado.\n"
-                            "O e-mail foi preenchido, mas não foi enviado (modo de teste).")
+    except smtplib.SMTPAuthenticationError:
+        print("Erro de autenticação. Verifique seu e-mail ou Senha de App.")
+        QMessageBox.critical(
+            None, 
+            "Erro de Autenticação", 
+            "Falha ao enviar e-mail. Verifique se o 'E-mail do Remetente' e a 'Senha de App' estão corretos nas Configurações."
+        )
+    except Exception as e:
+        print(f"Erro ao enviar e-mail: {e}")
+        QMessageBox.critical(
+            None, 
+            "Erro no Envio", 
+            f"Ocorreu um erro inesperado ao enviar o e-mail:\n{e}"
+        )
