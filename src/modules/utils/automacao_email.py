@@ -1,51 +1,46 @@
 import smtplib
-import ssl
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from PyQt6.QtWidgets import QMessageBox
 
 def enviar_email_gmail_com_cc(sender_email, sender_password, recipient_email, cc_emails, subject, body):
     """
-    Envia um e-mail usando o SMTP do Gmail com Senha de App e suporte a CC.
-
-    :param sender_email: O e-mail do remetente (ex: "ceimbratech@gmail.com")
-    :param sender_password: A "Senha de App" de 16 dígitos gerada pelo Google
-    :param recipient_email: O e-mail do destinatário principal
-    :param cc_emails: Uma lista de e-mails para enviar em cópia (CC)
-    :param subject: O assunto do e-mail
-    :param body: O corpo do e-mail (texto plano)
+    Envia e-mail usando SMTP com STARTTLS (Porta 587).
+    Esta abordagem é menos bloqueada por antivírus do que SMTP_SSL direto.
     """
     try:
-        # Cria a mensagem
-        message = MIMEMultipart()
-        message["From"] = sender_email
-        message["To"] = recipient_email
-        message["Subject"] = subject
-        
-        # Adiciona os e-mails em CC
+        # Configuração da mensagem
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = recipient_email
+        msg['Subject'] = subject
+
+        # Tratamento dos CCs
+        valid_cc_emails = []
         if cc_emails:
-            # Filtra e-mails vazios da lista, se houver
+            # Limpa e valida a lista de CCs
             valid_cc_emails = [email.strip() for email in cc_emails if email and email.strip()]
             if valid_cc_emails:
-                message["Cc"] = ", ".join(valid_cc_emails)
-        
-        # Adiciona o corpo do e-mail
-        message.attach(MIMEText(body, "plain"))
+                msg['Cc'] = ", ".join(valid_cc_emails)
 
-        # Configura a conexão com o servidor SMTP do Gmail
-        context = ssl.create_default_context()
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+        # Corpo do e-mail
+        msg.attach(MIMEText(body, 'plain'))
+
+        # Lista final de destinatários (Para + CCs)
+        all_recipients = [recipient_email] + valid_cc_emails
+
+        # --- MUDANÇA CRUCIAL AQUI ---
+        # Usamos a porta 587 e starttls(), igual ao seu código que funciona.
+        # Isso é mais "amigável" para o Windows Defender.
+        smtp_server = 'smtp.gmail.com'
+        smtp_port = 587
+
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls() # Criptografa a conexão após o início
             server.login(sender_email, sender_password)
-            
-            # Prepara a lista final de destinatários (Para + CC)
-            all_recipients = [recipient_email] + (valid_cc_emails if 'valid_cc_emails' in locals() else [])
-            
-            # Envia o e-mail
-            server.sendmail(
-                sender_email, all_recipients, message.as_string()
-            )
-            
-        print(f"E-mail enviado com sucesso para {recipient_email} (CC: {cc_emails})")
+            server.send_message(msg, to_addrs=all_recipients)
+        
+        print(f"E-mail enviado com sucesso para {recipient_email} (CC: {valid_cc_emails})")
         QMessageBox.information(
             None, 
             "E-mail Enviado", 
@@ -53,16 +48,16 @@ def enviar_email_gmail_com_cc(sender_email, sender_password, recipient_email, cc
         )
 
     except smtplib.SMTPAuthenticationError:
-        print("Erro de autenticação. Verifique seu e-mail ou Senha de App.")
+        print("Erro de autenticação.")
         QMessageBox.critical(
             None, 
             "Erro de Autenticação", 
-            "Falha ao enviar e-mail. Verifique se o 'E-mail do Remetente' e a 'Senha de App' estão corretos nas Configurações."
+            "Falha ao login no Gmail.\nVerifique se o e-mail e a Senha de App estão corretos nas Configurações."
         )
     except Exception as e:
         print(f"Erro ao enviar e-mail: {e}")
         QMessageBox.critical(
             None, 
             "Erro no Envio", 
-            f"Ocorreu um erro inesperado ao enviar o e-mail:\n{e}"
+            f"Ocorreu um erro ao enviar o e-mail:\n{str(e)}"
         )
