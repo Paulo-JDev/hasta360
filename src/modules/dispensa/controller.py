@@ -15,6 +15,7 @@ import webbrowser
 from urllib.parse import quote
 from modules.utils.automacao_email import executar_automacao_email
 from modules.utils.automacao_coordenadas import executar_automacao_email_coords
+from paths.config_path import load_config
 
 class DispensaEletronicaController(QObject): 
     def __init__(self, icons, view, model):
@@ -279,7 +280,7 @@ class DispensaEletronicaController(QObject):
             mensagem_final = mensagem_final.replace("{{email_responsavel}}", str(data.get("email", "[E-mail não informado]")))
             mensagem_final = mensagem_final.replace("{{sessao_publica}}", str(data_formatada))
             
-            assunto = f"Início da Sessão Pública - Dispensa Eletrônica: {data.get('id_processo')}"
+            assunto = f"Homologação da Dispensa Eletrônica: {data.get('id_processo')}"
 
             # 1. Abre o site do webmail em uma nova aba
             webbrowser.open_new_tab("https://webmail.marinha.mil.br/")
@@ -294,10 +295,12 @@ class DispensaEletronicaController(QObject):
                                     f"A mensagem para '{destinatario_email}' foi copiada para a sua área de transferência.\n\n"
                                     f"Por favor, crie um novo e-mail, cole o destinatário e a mensagem.")
 
-            # --- CÓDIGO REFINADO AQUI ---
-            # A variável 'corpo' recebe diretamente 'mensagem_final' sem replaces redundantes.
+            # --- CORREÇÃO APLICADA AQUI ---
+            # A variável 'corpo' agora recebe o valor de 'mensagem_final'
             corpo = mensagem_final
+            # O assunto já foi definido, não precisa repetir.
 
+            # Chama a nova função de automação baseada em coordenadas
             executar_automacao_email_coords(destinatario_email, assunto, corpo)
 
         except FileNotFoundError:

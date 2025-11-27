@@ -11,7 +11,7 @@ from modules.settings.settings_widget import SettingsWidget
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        print("Projeto Hasta360 - Versão 3.0.0 - 2025")
+        print("Projeto Hasta360 - Versão 3.3.0 - 2025")
         self.icons = load_icons()
         self.buttons = {}
         self.active_button = None

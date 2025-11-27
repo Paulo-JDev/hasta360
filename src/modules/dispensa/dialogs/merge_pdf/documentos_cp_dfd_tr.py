@@ -18,6 +18,8 @@ from PyPDF2 import PdfMerger
 import re
 from num2words import num2words
 from datetime import datetime
+from PyQt6.QtWidgets import QMessageBox
+import time
 import subprocess
 from fpdf import FPDF
 
@@ -540,14 +542,50 @@ class ConsolidarDocumentos:
             QMessageBox.warning(None, "Erro", f"Erro ao abrir ou converter o documento: {e}")
 
     def salvarPDF(self, docx_path):
+        """
+        Tenta converter para PDF. Se falhar (erro de rede/bloqueio), 
+        avisa o usuário para fazer manual, mas não trava o programa.
+        """
+        docx_path = Path(docx_path)
+        pdf_path = docx_path.with_suffix('.pdf')
+
         try:
-            pdf_path = self.convert_to_pdf(docx_path)
-            print(f"Documento PDF salvo: {pdf_path}")
+            # 1. TENTATIVA DE CORREÇÃO DE REDE: Pausa de 2 segundos
+            # Isso dá tempo para o Windows/Rede liberar o arquivo .docx recém-criado
+            # antes de tentar abri-lo novamente para conversão.
+            print("Aguardando liberação do arquivo na rede...")
+            time.sleep(2) 
+
+            # 2. Tenta converter usando sua função existente
+            # (Seja ela usando docx2pdf ou win32com)
+            self.convert_to_pdf(docx_path)
+            
+            print(f"Documento PDF salvo com sucesso: {pdf_path}")
             return pdf_path
+
         except Exception as e:
-            print(f"Erro ao converter o documento: {e}")
-            QMessageBox.warning(None, "Erro", f"Erro ao converter o documento: {e}")
-            return None
+            # 3. TRATAMENTO DE FALHA "SUAVE"
+            # Se der erro (arquivo em uso, sem permissão, etc), entramos aqui.
+            
+            erro_msg = str(e)
+            print(f"Aviso: Falha na conversão automática de PDF: {erro_msg}")
+
+            # Verifica se o DOCX pelo menos existe (o que é o mais importante)
+            if docx_path.exists():
+                QMessageBox.warning(
+                    None, 
+                    "Conversão Automática Indisponível", 
+                    f"O documento Word foi gerado com sucesso:\n\n{docx_path.name}\n\n"
+                    f"Porém, a conversão automática para PDF falhou (comum em pastas de rede).\n"
+                    "O programa continuará, mas você precisará abrir o Word e salvar como PDF manualmente."
+                )
+                # Retornamos None para que o sistema saiba que não tem PDF para juntar,
+                # mas não levantamos erro para não travar o resto.
+                return None
+            else:
+                # Se nem o DOCX existe, aí sim é um erro crítico
+                QMessageBox.critical(None, "Erro", f"Falha crítica: O arquivo DOCX não foi gerado.\n{erro_msg}")
+                return None
 
     def convert_to_pdf(self, docx_path):
         docx_path = Path(docx_path) if not isinstance(docx_path, Path) else docx_path

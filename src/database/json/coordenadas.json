@@ -1,0 +1,10 @@
+{
+    "btn_novo_email": {"x": 0, "y": 0},
+    "campo_para": {"x": 0, "y": 0},
+    "btn_cc": {"x": 0, "y": 0},
+    "campo_cc": {"x": 0, "y": 0},
+    "campo_assunto": {"x": 0, "y": 0},
+    "corpo_email": {"x": 0, "y": 0},
+    "btn_anexar": {"x": 0, "y": 0},
+    "btn_enviar": {"x": 0, "y": 0}
+}

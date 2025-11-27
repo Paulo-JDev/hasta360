@@ -1,92 +1,72 @@
 import pyautogui
 import pyperclip
 import time
-from pathlib import Path
 from PyQt6.QtWidgets import QMessageBox
+from modules.utils.coordinate_manager import CoordinateManager
 
-# Define o caminho para a pasta onde as imagens da automação estão salvas
-IMAGE_DIR = Path(__file__).parent.parent.parent / "assets" / "automation_images"
-
-def find_and_click(image_name, description, confidence=0.9, timeout=10):
+def executar_automacao_email(destinatario, ccs, assunto, corpo_mensagem):
     """
-    Procura por uma imagem na tela e clica nela.
-    Retorna True se for bem-sucedido, False caso contrário.
-    """
-    print(f"Procurando por: {description} ('{image_name}')...")
-    start_time = time.time()
-    while time.time() - start_time < timeout:
-        try:
-            # Tenta encontrar a imagem na tela
-            location = pyautogui.locateOnScreen(str(IMAGE_DIR / image_name), confidence=confidence)
-            if location:
-                pyautogui.click(pyautogui.center(location))
-                print(f"Sucesso: Clicou em '{description}'.")
-                time.sleep(1) # Pequena pausa para a UI reagir
-                return True
-        except pyautogui.ImageNotFoundException:
-            time.sleep(0.5) # Espera um pouco antes de tentar novamente
+    Executa a automação de e-mail usando coordenadas salvas.
     
-    print(f"ERRO: Não foi possível encontrar '{description}' na tela após {timeout} segundos.")
-    QMessageBox.critical(None, "Erro na Automação", f"Não foi possível encontrar o elemento '{description}' na tela.")
-    return False
-
-def paste_text(text):
-    """Copia um texto para a área de transferência e o cola."""
-    pyperclip.copy(text)
-    pyautogui.hotkey('ctrl', 'v')
-    print(f"Colou o texto: '{text[:30]}...'")
-    time.sleep(0.5)
-
-# --- FUNÇÃO PRINCIPAL DA AUTOMAÇÃO ---
-def executar_automacao_email(destinatario, assunto, corpo_mensagem):
+    :param destinatario: E-mail do destinatário principal
+    :param ccs: Lista de e-mails em cópia (ex: ['email1@teste.com', 'email2@teste.com'])
+    :param assunto: Assunto do e-mail
+    :param corpo_mensagem: Corpo do e-mail
     """
-    Executa uma sequência de passos de automação para enviar um e-mail.
-    """
-    print("\n--- INICIANDO AUTOMAÇÃO DE E-MAIL ---")
+    manager = CoordinateManager()
     
-    # =============================================================================
-    #           COMO ADICIONAR NOVOS PASSOS (SEU GUIA)
-    # =============================================================================
-    # Para adicionar um novo passo, basta adicionar uma nova verificação 'if not ...'
-    # usando as funções 'find_and_click' ou 'paste_text'.
-    #
-    # Exemplo: Se você precisar clicar em um campo de "Assunto" antes de colar,
-    # você adicionaria a seguinte linha:
-    #
-    # if not find_and_click('campo_assunto.png', 'Campo de Assunto'):
-    #     return # Para a automação se o passo falhar
-    #
-    # E então o passo para colar o assunto:
-    # paste_text(assunto)
-    #
-    # =============================================================================
+    print("\n--- INICIANDO AUTOMAÇÃO DE E-MAIL (COORDENADAS) ---")
 
-    # --- PASSO 1: Clicar no botão para criar uma nova mensagem ---
-    # (Você precisa tirar um print do botão "Nova Mensagem" e salvar como 'nova_mensagem.png')
-    if not find_and_click('nova_mensagem.png', "Botão 'Nova Mensagem'"):
-        return # Para a automação se o passo falhar
+    # Função auxiliar para clicar em uma coordenada salva
+    def click_at(key, descricao):
+        coords = manager.get_coord(key)
+        if not coords:
+            QMessageBox.warning(None, "Configuração Necessária", 
+                                f"A posição do '{descricao}' não foi configurada.\n"
+                                "Vá em Configurações (Engrenagem) > Automação e configure.")
+            return False
+        
+        print(f"Clicando em {descricao} na posição {coords}...")
+        pyautogui.click(coords[0], coords[1])
+        time.sleep(1.0) # Pausa para a interface reagir
+        return True
 
-    # --- PASSO 2: Colar o destinatário ---
-    # (Não precisa de imagem, apenas cola no campo que estiver focado)
+    # Função auxiliar para colar texto
+    def paste_text(text):
+        pyperclip.copy(text)
+        pyautogui.hotkey('ctrl', 'v')
+        time.sleep(0.5)
+
+    # --- PASSO 1: Clicar em 'Novo Email' ---
+    if not click_at("btn_novo_email", "Botão Novo Email"): return
+
+    # --- PASSO 2: Clicar e Preencher 'Para' ---
+    if not click_at("campo_para", "Campo Para"): return
     paste_text(destinatario)
-    pyautogui.press('tab') # Pressiona Tab para pular para o próximo campo (geralmente Assunto)
-    time.sleep(0.5)
 
-    # --- PASSO 3: Colar o assunto ---
+    # --- PASSO 3: Clicar e Preencher 'CC' (Cópia) ---
+    # Só executa se houver CCs para adicionar
+    if ccs and len(ccs) > 0:
+        # Clica no botão que abre o campo CC (se necessário no seu webmail)
+        if not click_at("btn_exibir_cc", "Botão Exibir CC"): return
+        
+        # Clica no campo CC
+        if not click_at("campo_cc", "Campo CC"): return
+        
+        # Junta os e-mails com ponto e vírgula (padrão de e-mail)
+        texto_cc = "; ".join(ccs)
+        paste_text(texto_cc)
+
+    # --- PASSO 4: Clicar e Preencher 'Assunto' ---
+    if not click_at("campo_assunto", "Campo Assunto"): return
     paste_text(assunto)
-    pyautogui.press('tab') # Pressiona Tab para pular para o corpo do e-mail
-    time.sleep(0.5)
 
-    # --- PASSO 4: Colar o corpo da mensagem ---
+    # --- PASSO 5: Clicar e Preencher 'Corpo' ---
+    if not click_at("campo_corpo", "Corpo do Email"): return
     paste_text(corpo_mensagem)
-    
-    # --- PASSO 5 (Opcional): Clicar em Enviar ---
-    # (Descomente as linhas abaixo quando estiver pronto para enviar de verdade)
-    # print("Procurando pelo botão Enviar...")
-    # if not find_and_click('botao_enviar.png', "Botão 'Enviar'"):
-    #     return
 
-    print("--- AUTOMAÇÃO FINALIZADA (Modo de Teste) ---")
-    QMessageBox.information(None, "Automação Concluída", 
-                            "O processo de automação foi finalizado.\n"
-                            "O e-mail foi preenchido, mas não foi enviado (modo de teste).")
+    # --- PASSO 6 (Opcional): Anexar Arquivos ---
+    # (Podemos adicionar depois se precisar)
+
+    print("--- AUTOMAÇÃO CONCLUÍDA ---")
+    QMessageBox.information(None, "Sucesso", "O e-mail foi preenchido com sucesso!\nVerifique e clique em enviar.")

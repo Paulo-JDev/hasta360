@@ -1,59 +1,86 @@
+# src/modules/utils/automacao_coordenadas.py
+
 import pyautogui
 import pyperclip
 import time
 from PyQt6.QtWidgets import QMessageBox
+from modules.utils.coordinate_manager import CoordinateManager
 
-def executar_automacao_email_coords(destinatario, assunto, corpo_mensagem):
+from modules.utils.cc_manager import CCManager
+
+def executar_automacao_email_coords(destinatario, ccs, assunto, corpo_mensagem):
     """
-    Executa uma sequência de automação baseada em coordenadas fixas para enviar um e-mail.
+    Executa a automação de e-mail seguindo a sequência:
+    Novo -> Para -> (Exibir CC) -> CC -> Assunto -> Corpo -> (Anexar) -> Enviar
     """
-    try:
-        print("\n--- INICIANDO AUTOMAÇÃO DE E-MAIL POR COORDENADAS ---")
+    manager = CoordinateManager()
+    cc_manager = CCManager()
+    
+    print("\n--- INICIANDO AUTOMAÇÃO (PyAutoGUI) ---")
 
-        # 1. Pausa inicial para o navegador abrir a aba
-        print("Aguardando o navegador carregar (2 segundos)...")
-        time.sleep(2)
-
-        # 2. Clicar para abrir a tela de "Escrever E-mail"
-        print("Clicando para compor o novo e-mail...")
-        pyautogui.click(x=-1857, y=226)
-        time.sleep(2)  # Pausa para a tela de composição de e-mail abrir
-
-        # 3. Colar o destinatário
-        # O cursor já deve estar no campo "Para:", então colamos diretamente.
-        print(f"Colando destinatário: {destinatario}")
-        pyperclip.copy(destinatario)
-        pyautogui.hotkey('ctrl', 'v')
-        time.sleep(0.5)
-
-        # 4. Clicar no campo do corpo do e-mail
-        # (A sua lógica de clicar no campo "Para:" como fallback é boa, mas
-        # pular com 'tab' é mais confiável se os campos mudarem de lugar)
-        print("Pulando para o campo do assunto...")
-        pyautogui.press('tab')
-        pyautogui.press('tab')
-        pyautogui.press('tab') # Geralmente pula do "Para" para o "Assunto"
-        time.sleep(0.5)
+    # --- FUNÇÕES AUXILIARES ---
+    def click_at(key, descricao, obrigatorio=True):
+        coords = manager.get_coord(key)
+        if not coords:
+            if obrigatorio:
+                QMessageBox.warning(None, "Configuração Faltando", 
+                                    f"A posição do '{descricao}' não foi configurada.\n"
+                                    "Vá em Configurações (Engrenagem) e capture a posição.")
+            else:
+                print(f"Pulo opcional: '{descricao}' não configurado.")
+            return False
         
-        print(f"Colando assunto...")
-        pyperclip.copy(assunto)
+        print(f"Clicando em {descricao} ({coords})...")
+        pyautogui.click(coords[0], coords[1])
+        time.sleep(1.5) # Pausa padrão para o site carregar/reagir
+        return True
+
+    def paste_text(text):
+        if not text: return
+        pyperclip.copy(text)
         pyautogui.hotkey('ctrl', 'v')
         time.sleep(0.5)
+
+    # --- INÍCIO DO FLUXO ---
+
+    # 0. Aviso Inicial (Dá tempo do usuário soltar o mouse)
+    print("Aguardando 3 segundos antes de começar...")
+    time.sleep(3)
+
+    # 1. Clicar em 'Novo Email'
+    if not click_at("btn_novo_email", "Botão Novo Email"): return
+
+    # 2. Campo 'Para'
+    if not click_at("campo_para", "Campo Para"): return
+    paste_text(destinatario)
+
+    # 3. Campo 'CC'
+    texto_ccs = cc_manager.get_formatted_string()
+    
+    if texto_ccs: # Só executa se tiver emails salvos no JSON
+        if manager.get_coord("btn_exibir_cc"):
+            click_at("btn_exibir_cc", "Botão Exibir CC", obrigatorio=False)
         
-        print("Pulando para o corpo do e-mail...")
-        pyautogui.click(x=-1745, y=437) # Geralmente pula do "Assunto" para o "Corpo"
-        time.sleep(0.5)
+        if click_at("campo_cc", "Campo CC"):
+            paste_text(texto_ccs) # Cola a lista que veio do JSON
 
-        # 5. Colar a mensagem no corpo do e-mail
-        print("Colando corpo da mensagem...")
-        pyperclip.copy(corpo_mensagem)
-        pyautogui.hotkey('ctrl', 'v')
-        time.sleep(1)
+    # 4. Campo 'Assunto'
+    if not click_at("campo_assunto", "Campo Assunto"): return
+    paste_text(assunto)
 
-        # 6. Clicar em Enviar
-        print("Clicando no botão Enviar...")
-        pyautogui.click(x=-1889, y=231)
+    # 5. Corpo do Email
+    if not click_at("campo_corpo", "Corpo do Email"): return
+    paste_text(corpo_mensagem)
 
-    except Exception as e:
-        print(f"ERRO durante a automação com PyAutoGUI: {e}")
-        QMessageBox.critical(None, "Erro na Automação", f"Ocorreu um erro durante a automação do mouse e teclado: {e}")
+    # 6. Botão 'Anexar' (Ainda não implementamos a seleção de arquivo, apenas o clique)
+    # Deixei como opcional (obrigatorio=False) para não travar se você não configurar
+    click_at("btn_anexar", "Botão Anexar", obrigatorio=False)
+
+    # 7. Botão 'Enviar'
+    # Comente a linha abaixo se quiser revisar antes de enviar automaticamente
+    # click_at("btn_enviar", "Botão Enviar", obrigatorio=False)
+
+    print("--- FIM DA AUTOMAÇÃO ---")
+    QMessageBox.information(None, "Concluído", 
+                            "Preenchimento finalizado!\n"
+                            "Verifique os dados e anexe os arquivos manualmente se necessário.")
