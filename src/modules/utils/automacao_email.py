@@ -4,69 +4,75 @@ import time
 from PyQt6.QtWidgets import QMessageBox
 from modules.utils.coordinate_manager import CoordinateManager
 
-def executar_automacao_email(destinatario, ccs, assunto, corpo_mensagem):
+def executar_automacao_email_coords(destinatario, ccs, assunto, corpo_mensagem):
     """
-    Executa a automação de e-mail usando coordenadas salvas.
-    
-    :param destinatario: E-mail do destinatário principal
-    :param ccs: Lista de e-mails em cópia (ex: ['email1@teste.com', 'email2@teste.com'])
-    :param assunto: Assunto do e-mail
-    :param corpo_mensagem: Corpo do e-mail
+    Executa a automação seguindo a ordem:
+    Novo Email -> Para -> (Exibir CC) -> CC -> Assunto -> Corpo -> (Anexar) -> Enviar
     """
     manager = CoordinateManager()
     
-    print("\n--- INICIANDO AUTOMAÇÃO DE E-MAIL (COORDENADAS) ---")
+    print("\n--- INICIANDO AUTOMAÇÃO (COORDENADAS) ---")
 
-    # Função auxiliar para clicar em uma coordenada salva
-    def click_at(key, descricao):
+    # --- FUNÇÕES AUXILIARES ---
+    def click_at(key, descricao, obrigatorio=True):
         coords = manager.get_coord(key)
-        if not coords:
-            QMessageBox.warning(None, "Configuração Necessária", 
-                                f"A posição do '{descricao}' não foi configurada.\n"
-                                "Vá em Configurações (Engrenagem) > Automação e configure.")
+        # Se a coordenada for 0,0 ou inexistente, considera não configurada
+        if not coords or (coords[0] == 0 and coords[1] == 0):
+            if obrigatorio:
+                QMessageBox.warning(None, "Configuração Faltando", 
+                                    f"A posição do '{descricao}' ({key}) não foi configurada ou está zerada.\n"
+                                    "Vá em Configurações (Engrenagem) e capture a posição.")
             return False
         
-        print(f"Clicando em {descricao} na posição {coords}...")
+        print(f"(automação_email.py)Clicando em {descricao} na posição {coords}...")
         pyautogui.click(coords[0], coords[1])
-        time.sleep(1.0) # Pausa para a interface reagir
+        time.sleep(1.5) # Pausa para o site responder
         return True
 
-    # Função auxiliar para colar texto
     def paste_text(text):
+        if not text: return
         pyperclip.copy(text)
         pyautogui.hotkey('ctrl', 'v')
         time.sleep(0.5)
 
-    # --- PASSO 1: Clicar em 'Novo Email' ---
+    # 0. Aviso Inicial
+    print("Aguardando o navegador (3s)...")
+    time.sleep(3)
+
+    # 1. Clicar em 'Novo Email'
     if not click_at("btn_novo_email", "Botão Novo Email"): return
 
-    # --- PASSO 2: Clicar e Preencher 'Para' ---
+    # 2. Campo 'Para'
     if not click_at("campo_para", "Campo Para"): return
     paste_text(destinatario)
 
-    # --- PASSO 3: Clicar e Preencher 'CC' (Cópia) ---
-    # Só executa se houver CCs para adicionar
+    # 3. Campo 'CC' (Lógica Nova)
+    # Só executa se houver CCs na lista passada
     if ccs and len(ccs) > 0:
-        # Clica no botão que abre o campo CC (se necessário no seu webmail)
-        if not click_at("btn_exibir_cc", "Botão Exibir CC"): return
+        # Tenta clicar no botão de exibir CC (caso o webmail esconda o campo)
+        # Se não tiver coordenada salva (0,0), ele apenas pula sem erro (obrigatorio=False)
+        if manager.get_coord("btn_exibir_cc") != (0,0):
+            click_at("btn_exibir_cc", "Botão Exibir CC", obrigatorio=False)
         
-        # Clica no campo CC
-        if not click_at("campo_cc", "Campo CC"): return
-        
-        # Junta os e-mails com ponto e vírgula (padrão de e-mail)
-        texto_cc = "; ".join(ccs)
-        paste_text(texto_cc)
+        # Clica no campo CC e cola
+        if click_at("campo_cc", "Campo CC"):
+            # Junta a lista de emails em uma única string separada por ponto e vírgula
+            texto_cc = "; ".join(ccs) 
+            paste_text(texto_cc)
 
-    # --- PASSO 4: Clicar e Preencher 'Assunto' ---
+    # 4. Campo 'Assunto'
     if not click_at("campo_assunto", "Campo Assunto"): return
     paste_text(assunto)
 
-    # --- PASSO 5: Clicar e Preencher 'Corpo' ---
+    # 5. Corpo do Email (Usa a chave correta 'campo_corpo')
     if not click_at("campo_corpo", "Corpo do Email"): return
     paste_text(corpo_mensagem)
 
-    # --- PASSO 6 (Opcional): Anexar Arquivos ---
-    # (Podemos adicionar depois se precisar)
+    # 6. Botão 'Anexar' (Opcional por enquanto)
+    # click_at("btn_anexar", "Botão Anexar", obrigatorio=False)
 
-    print("--- AUTOMAÇÃO CONCLUÍDA ---")
-    QMessageBox.information(None, "Sucesso", "O e-mail foi preenchido com sucesso!\nVerifique e clique em enviar.")
+    # 7. Botão 'Enviar' (Opcional - Descomente para enviar automático)
+    click_at("btn_enviar", "Botão Enviar", obrigatorio=False)
+
+    print("--- FIM DA AUTOMAÇÃO ---")
+    QMessageBox.information(None, "Concluído", "E-mail preenchido com sucesso!")

@@ -1,10 +1,42 @@
 {
-    "btn_novo_email": {"x": 0, "y": 0},
-    "campo_para": {"x": 0, "y": 0},
-    "btn_cc": {"x": 0, "y": 0},
-    "campo_cc": {"x": 0, "y": 0},
-    "campo_assunto": {"x": 0, "y": 0},
-    "corpo_email": {"x": 0, "y": 0},
-    "btn_anexar": {"x": 0, "y": 0},
-    "btn_enviar": {"x": 0, "y": 0}
+    "btn_novo_email": {
+        "x": 541,
+        "y": 326
+    },
+    "campo_para": {
+        "x": 538,
+        "y": 362
+    },
+    "btn_cc": {
+        "x": 0,
+        "y": 0
+    },
+    "campo_cc": {
+        "x": 540,
+        "y": 422
+    },
+    "campo_assunto": {
+        "x": 540,
+        "y": 452
+    },
+    "corpo_email": {
+        "x": 0,
+        "y": 0
+    },
+    "btn_anexar": {
+        "x": 536,
+        "y": 518
+    },
+    "btn_enviar": {
+        "x": 541,
+        "y": 582
+    },
+    "btn_exibir_cc": {
+        "x": 543,
+        "y": 391
+    },
+    "campo_corpo": {
+        "x": 544,
+        "y": 486
+    }
 }

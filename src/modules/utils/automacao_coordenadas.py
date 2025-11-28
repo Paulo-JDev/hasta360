@@ -30,7 +30,7 @@ def executar_automacao_email_coords(destinatario, ccs, assunto, corpo_mensagem):
                 print(f"Pulo opcional: '{descricao}' não configurado.")
             return False
         
-        print(f"Clicando em {descricao} ({coords})...")
+        print(f"(automação_coordenadas.py)Clicando em {descricao} ({coords})...")
         pyautogui.click(coords[0], coords[1])
         time.sleep(1.5) # Pausa padrão para o site carregar/reagir
         return True

@@ -13,9 +13,9 @@ import os
 from modules.dispensa.dados_api.api_consulta import ConsultaAPIDialog
 import webbrowser
 from urllib.parse import quote
-from modules.utils.automacao_email import executar_automacao_email
 from modules.utils.automacao_coordenadas import executar_automacao_email_coords
 from paths.config_path import load_config
+from modules.utils.cc_manager import CCManager # Importante
 
 class DispensaEletronicaController(QObject): 
     def __init__(self, icons, view, model):
@@ -282,6 +282,9 @@ class DispensaEletronicaController(QObject):
             
             assunto = f"Homologação da Dispensa Eletrônica: {data.get('id_processo')}"
 
+            cc_manager = CCManager()
+            lista_ccs = cc_manager.load_emails()
+
             # 1. Abre o site do webmail em uma nova aba
             webbrowser.open_new_tab("https://webmail.marinha.mil.br/")
             
@@ -301,7 +304,7 @@ class DispensaEletronicaController(QObject):
             # O assunto já foi definido, não precisa repetir.
 
             # Chama a nova função de automação baseada em coordenadas
-            executar_automacao_email_coords(destinatario_email, assunto, corpo)
+            executar_automacao_email_coords(destinatario_email, lista_ccs, assunto, corpo)
 
         except FileNotFoundError:
             QMessageBox.critical(self.view, "Erro de Template", "O arquivo 'mensagem_sessaopublica.txt' não foi encontrado.")
@@ -332,6 +335,9 @@ class DispensaEletronicaController(QObject):
             
             assunto = f"Homologação da Dispensa Eletrônica: {data.get('id_processo')}"
 
+            cc_manager = CCManager()
+            lista_ccs = cc_manager.load_emails()
+
             # 1. Abre o site do webmail em uma nova aba
             webbrowser.open_new_tab("https://webmail.marinha.mil.br/")
             
@@ -351,7 +357,7 @@ class DispensaEletronicaController(QObject):
             # O assunto já foi definido, não precisa repetir.
 
             # Chama a nova função de automação baseada em coordenadas
-            executar_automacao_email_coords(destinatario_email, assunto, corpo)
+            executar_automacao_email_coords(destinatario_email, lista_ccs, assunto, corpo)
 
         except Exception as e:
             QMessageBox.critical(self.view, "Erro", f"Ocorreu um erro ao preparar a mensagem: {e}")
