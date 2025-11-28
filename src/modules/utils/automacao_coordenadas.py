@@ -78,7 +78,7 @@ def executar_automacao_email_coords(destinatario, ccs, assunto, corpo_mensagem):
 
     # 7. Botão 'Enviar'
     # Comente a linha abaixo se quiser revisar antes de enviar automaticamente
-    # click_at("btn_enviar", "Botão Enviar", obrigatorio=False)
+    click_at("btn_enviar", "Botão Enviar", obrigatorio=False)
 
     print("--- FIM DA AUTOMAÇÃO ---")
     QMessageBox.information(None, "Concluído", 
